@@ -9,3 +9,7 @@ coverage/
 firebase-debug.log
 firestore-debug.log
 storage-debug.log
+.vercel/
+google-services*.json
+*-firebase-adminsdk-*.json
+*service-account*.json
