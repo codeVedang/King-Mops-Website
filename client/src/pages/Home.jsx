@@ -1,19 +1,22 @@
 import {
   ArrowRight,
   CheckCircle2,
-  Droplets,
-  Home as HomeIcon,
+  Clock3,
+  Droplet,
+  Layers3,
   PackageCheck,
   ShieldCheck,
-  Sparkles,
+  Search,
+  ShoppingCart,
   Store,
   Truck
 } from 'lucide-react';
 import { useEffect, useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { ProductCard } from '../components/ProductCard.jsx';
+import { useCart } from '../context/CartContext.jsx';
 import { apiFetch } from '../lib/api.js';
-import { categories } from '../lib/format.js';
+import { categories, formatINR } from '../lib/format.js';
 
 const categoryTone = {
   Mops: 'home-category--mops',
@@ -21,22 +24,22 @@ const categoryTone = {
   'Cleaning Products': 'home-category--cleaning'
 };
 
-const solutionItems = [
+const surfaceItems = [
   {
-    title: 'Daily Floor Reset',
-    text: 'Spin mops and refills for wet floors, dust, and fast everyday cleaning.',
+    title: 'Wet floors',
+    text: 'Spin mops and refills for daily floor resets.',
     to: '/shop?category=Mops',
-    icon: HomeIcon
+    icon: Droplet
   },
   {
-    title: 'Glass and Bathroom Edges',
-    text: 'Wipers built for tiles, mirrors, balconies, and hard-to-reach corners.',
+    title: 'Bathroom edges',
+    text: 'Wipers for tiles, mirrors, corners, and balconies.',
     to: '/shop?category=Wipers',
-    icon: Droplets
+    icon: Layers3
   },
   {
-    title: 'Shop and Office Cleaning',
-    text: 'Durable cleaning products for repeated use through the day.',
+    title: 'Busy counters',
+    text: 'Cleaning products for shops, offices, and kitchens.',
     to: '/shop?category=Cleaning%20Products',
     icon: Store
   }
@@ -44,12 +47,15 @@ const solutionItems = [
 
 export const Home = () => {
   const [featured, setFeatured] = useState([]);
+  const [search, setSearch] = useState('');
+  const navigate = useNavigate();
+  const { addItem } = useCart();
 
   useEffect(() => {
     const loadProducts = async () => {
-      const featuredData = await apiFetch('/products?featured=true&pageSize=4');
+      const featuredData = await apiFetch('/products?featured=true&pageSize=6');
       if (featuredData.products.length > 0) return featuredData.products;
-      const latestData = await apiFetch('/products?pageSize=4');
+      const latestData = await apiFetch('/products?pageSize=6');
       return latestData.products;
     };
 
@@ -58,64 +64,115 @@ export const Home = () => {
       .catch(() => setFeatured([]));
   }, []);
 
+  const spotlight = featured[0];
+  const gridProducts = featured.slice(1, 5);
+
+  const submitSearch = (event) => {
+    event.preventDefault();
+    const query = search.trim();
+    navigate(query ? `/shop?search=${encodeURIComponent(query)}` : '/shop');
+  };
+
   return (
     <>
       <section className="home-hero">
         <div className="home-hero-copy">
           <p className="eyebrow">Sri Tirumala Products</p>
-          <h1>Cleaning tools that keep up with real Indian homes</h1>
+          <h1>King Brand Mops</h1>
           <p>
-            Shop mops, wipers, and cleaning products made for daily spills, monsoon floors,
-            balconies, shops, and fast weekend deep-cleaning.
+            Mops, wipers, refills, and cleaning products arranged for the way Indian homes
+            actually get cleaned: floor first, edges next, final wipe last.
           </p>
           <div className="home-hero-actions">
             <Link className="primary-button" to="/shop">
-              Shop Cleaning Range
+              Start Shopping
               <ArrowRight size={18} />
             </Link>
-            <Link className="secondary-button" to="/shop?category=Mops">
-              Browse Mops
+            <Link className="secondary-button" to="/shop?sort=price-low">
+              Value Picks
             </Link>
           </div>
           <div className="home-hero-meta">
-            <span>GST-ready billing</span>
-            <span>Razorpay secure checkout</span>
-            <span>Fast order processing</span>
+            <span>Live Razorpay checkout</span>
+            <span>Admin-managed catalog</span>
+            <span>Order status tracking</span>
           </div>
+        </div>
+      </section>
+
+      <section className="home-shop-console" aria-label="Quick shop">
+        <form className="home-search-panel" onSubmit={submitSearch}>
+          <Search size={20} />
+          <input
+            value={search}
+            onChange={(event) => setSearch(event.target.value)}
+            placeholder="Search mop, wiper, refill, cleaner..."
+          />
+          <button type="submit">Search</button>
+        </form>
+        <div className="home-category-pills">
+          {categories.map((category) => (
+            <Link key={category} to={`/shop?category=${encodeURIComponent(category)}`}>
+              {category}
+            </Link>
+          ))}
         </div>
       </section>
 
       <section className="home-proof-strip">
         <div>
           <Truck size={22} />
-          <span>Fast dispatch for online orders</span>
+          <span>Fast online order processing</span>
         </div>
         <div>
           <ShieldCheck size={22} />
-          <span>Live Razorpay payment gateway</span>
+          <span>Secure live payment gateway</span>
         </div>
         <div>
-          <Sparkles size={22} />
-          <span>Made for repeated daily cleaning</span>
+          <Clock3 size={22} />
+          <span>Built for everyday cleaning rounds</span>
         </div>
       </section>
 
-      <section className="section-wrap home-featured-section">
+      <section className="section-wrap home-spotlight-section">
         <div className="section-heading">
           <div>
-            <p className="eyebrow">Store Picks</p>
-            <h2>Cleaning essentials ready to order</h2>
+            <p className="eyebrow">Quick Buy</p>
+            <h2>Start with the product customers see first</h2>
           </div>
           <Link to="/shop" className="inline-link">
-            View all
+            Full catalog
             <ArrowRight size={16} />
           </Link>
         </div>
-        {featured.length > 0 ? (
-          <div className="product-grid">
-            {featured.map((product) => (
-              <ProductCard key={product.id} product={product} />
-            ))}
+
+        {spotlight ? (
+          <div className="home-product-spotlight">
+            <Link className="home-product-image" to={`/products/${spotlight.id}`}>
+              <img src={spotlight.images?.[0]} alt={spotlight.name} />
+            </Link>
+            <div className="home-product-copy">
+              <p className="eyebrow">{spotlight.category}</p>
+              <h3>{spotlight.name}</h3>
+              <p>{spotlight.description}</p>
+              <div className="price-row detail-price">
+                <strong>{formatINR(spotlight.pricePaise)}</strong>
+                {spotlight.mrpPaise > spotlight.pricePaise && <s>{formatINR(spotlight.mrpPaise)}</s>}
+              </div>
+              <div className="button-row">
+                <button type="button" className="primary-button" onClick={() => addItem(spotlight)}>
+                  <ShoppingCart size={18} />
+                  Add to Cart
+                </button>
+                <Link className="secondary-button" to={`/products/${spotlight.id}`}>
+                  View Details
+                </Link>
+              </div>
+              <div className="home-product-notes">
+                <span>Stock checked live</span>
+                <span>GST calculated at checkout</span>
+              </div>
+            </div>
           </div>
         ) : (
           <div className="home-empty-products">
@@ -128,12 +185,12 @@ export const Home = () => {
       <section className="section-wrap">
         <div className="section-heading">
           <div>
-            <p className="eyebrow">Cleaning Moments</p>
-            <h2>Choose what you need to clean today</h2>
+            <p className="eyebrow">Shop By Surface</p>
+            <h2>Pick the mess, then pick the tool</h2>
           </div>
         </div>
         <div className="home-solution-grid">
-          {solutionItems.map((item) => {
+          {surfaceItems.map((item) => {
             const Icon = item.icon;
             return (
               <Link className="home-solution-card" to={item.to} key={item.title}>
@@ -150,32 +207,40 @@ export const Home = () => {
       <section className="section-wrap home-category-section">
         <div className="section-heading">
           <div>
-            <p className="eyebrow">Categories</p>
-            <h2>Shop by product type</h2>
+            <p className="eyebrow">More Store Picks</p>
+            <h2>Keep browsing without losing the cart</h2>
           </div>
         </div>
-        <div className="category-grid">
-          {categories.map((category) => (
-            <Link
-              key={category}
-              to={`/shop?category=${encodeURIComponent(category)}`}
-              className={`category-tile ${categoryTone[category] || ''}`}
-            >
-              <span>{category}</span>
-              <ArrowRight size={18} />
-            </Link>
-          ))}
-        </div>
+        {gridProducts.length > 0 ? (
+          <div className="product-grid">
+            {gridProducts.map((product) => (
+              <ProductCard key={product.id} product={product} />
+            ))}
+          </div>
+        ) : (
+          <div className="category-grid">
+            {categories.map((category) => (
+              <Link
+                key={category}
+                to={`/shop?category=${encodeURIComponent(category)}`}
+                className={`category-tile ${categoryTone[category] || ''}`}
+              >
+                <span>{category}</span>
+                <ArrowRight size={18} />
+              </Link>
+            ))}
+          </div>
+        )}
       </section>
 
       <section className="home-care-band">
         <div>
-          <p className="eyebrow">Complete Kit</p>
-          <h2>Build one order for floors, glass, tiles, and corners</h2>
-          <p>Mix mops, wipers, refills, and cleaning accessories from the same store.</p>
+          <p className="eyebrow">Cleaning Flow</p>
+          <h2>Floor, edge, wipe: build the whole routine in one cart</h2>
+          <p>Move from category to product to checkout without jumping between stores.</p>
         </div>
         <Link className="secondary-button" to="/shop?category=Cleaning%20Products">
-          Explore Cleaning Products
+          Finish The Kit
         </Link>
       </section>
     </>
