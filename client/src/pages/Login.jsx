@@ -22,6 +22,11 @@ export const Login = () => {
   const redirectTo = location.state?.from?.pathname || '/';
 
   const update = (event) => setForm({ ...form, [event.target.name]: event.target.value });
+  const switchMode = (nextMode) => {
+    setMode(nextMode);
+    setError('');
+    setMessage('');
+  };
 
   const submit = async (event) => {
     event.preventDefault();
@@ -75,18 +80,19 @@ export const Login = () => {
         <p className="eyebrow">Customer Access</p>
         <h1>{mode === 'login' ? 'Login to checkout' : 'Create your account'}</h1>
         <div className="segmented-control">
-          <button type="button" className={mode === 'login' ? 'active' : ''} onClick={() => setMode('login')}>
+          <button type="button" className={mode === 'login' ? 'active' : ''} onClick={() => switchMode('login')}>
             Login
           </button>
           <button
             type="button"
             className={mode === 'register' ? 'active' : ''}
-            onClick={() => setMode('register')}
+            onClick={() => switchMode('register')}
           >
             Register
           </button>
         </div>
         <form className="form-grid" onSubmit={submit}>
+          <div id="phone-recaptcha-container" className="recaptcha-container" />
           {mode === 'register' && (
             <>
               <label>
@@ -103,7 +109,6 @@ export const Login = () => {
                   required
                 />
               </label>
-              <div id="phone-recaptcha-container" className="recaptcha-container" />
               <div className="otp-row full-span">
                 <button type="button" className="secondary-button" onClick={sendOtp}>
                   <Smartphone size={18} />

@@ -45,6 +45,18 @@ const setAdminSession = ({ token, user }) => {
   localStorage.setItem('kingmops:adminUser', JSON.stringify(user));
 };
 
+const clearPhoneRecaptcha = () => {
+  if (!window.kingMopsRecaptchaVerifier) return;
+  try {
+    window.kingMopsRecaptchaVerifier.clear();
+  } catch {
+    // Firebase can throw if the widget was already removed by a route/mode change.
+  }
+  window.kingMopsRecaptchaVerifier = null;
+  const container = document.getElementById('phone-recaptcha-container');
+  if (container) container.innerHTML = '';
+};
+
 export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
   const [profile, setProfile] = useState(null);
@@ -106,11 +118,14 @@ export const AuthProvider = ({ children }) => {
   }, []);
 
   const setupRecaptcha = () => {
-    if (!window.kingMopsRecaptchaVerifier) {
-      window.kingMopsRecaptchaVerifier = new RecaptchaVerifier(auth, 'phone-recaptcha-container', {
-        size: 'invisible'
-      });
+    const container = document.getElementById('phone-recaptcha-container');
+    if (!container) {
+      throw new Error('Phone verification is still loading. Refresh the page and try again.');
     }
+    clearPhoneRecaptcha();
+    window.kingMopsRecaptchaVerifier = new RecaptchaVerifier(auth, container, {
+      size: 'invisible'
+    });
     return window.kingMopsRecaptchaVerifier;
   };
 
@@ -124,10 +139,18 @@ export const AuthProvider = ({ children }) => {
       return true;
     }
 
-    const provider = new PhoneAuthProvider(auth);
-    const verificationId = await provider.verifyPhoneNumber(`+91${phone}`, setupRecaptcha());
-    setPhoneVerification({ phone, verificationId, verified: false });
-    return true;
+    try {
+      const provider = new PhoneAuthProvider(auth);
+      const verificationId = await provider.verifyPhoneNumber(`+91${phone}`, setupRecaptcha());
+      setPhoneVerification({ phone, verificationId, verified: false });
+      return true;
+    } catch (error) {
+      clearPhoneRecaptcha();
+      if (error.code === 'auth/captcha-check-failed' || String(error.message || '').includes('DUPE')) {
+        throw new Error('Phone verification captcha failed. Refresh once and try Send OTP again.');
+      }
+      throw error;
+    }
   };
 
   const verifyPhoneOtp = async (code) => {
@@ -275,6 +298,7 @@ export const AuthProvider = ({ children }) => {
     localStorage.removeItem('kingmops:demoUser');
     localStorage.removeItem('kingmops:demoUid');
     localStorage.removeItem('kingmops:demoRole');
+    clearPhoneRecaptcha();
     setUser(null);
     setProfile(null);
   };
