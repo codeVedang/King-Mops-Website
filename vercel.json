@@ -7,6 +7,21 @@
   "functions": {
     "api/[...path].js": {
       "maxDuration": 30
+    },
+    "api/auth/[...path].js": {
+      "maxDuration": 30
+    },
+    "api/admin/[...path].js": {
+      "maxDuration": 30
+    },
+    "api/orders/[...path].js": {
+      "maxDuration": 30
+    },
+    "api/payments/[...path].js": {
+      "maxDuration": 30
+    },
+    "api/products/[...path].js": {
+      "maxDuration": 30
     }
   },
   "rewrites": [
