@@ -27,6 +27,16 @@ export const env = {
     keySecret: process.env.RAZORPAY_KEY_SECRET || '',
     webhookSecret: process.env.RAZORPAY_WEBHOOK_SECRET || ''
   },
+  admin: {
+    email: process.env.ADMIN_EMAIL || process.env.INITIAL_ADMIN_EMAIL || 'admin@kingbrandmops.in',
+    password: process.env.ADMIN_PASSWORD || process.env.INITIAL_ADMIN_PASSWORD || 'Admin@12345',
+    name: process.env.ADMIN_NAME || process.env.INITIAL_ADMIN_NAME || 'King Mops Admin',
+    tokenSecret:
+      process.env.ADMIN_TOKEN_SECRET ||
+      process.env.RAZORPAY_KEY_SECRET ||
+      process.env.FIREBASE_PRIVATE_KEY ||
+      'kingmops-admin-session'
+  },
   demoMode: process.env.DEMO_MODE !== 'false'
 };
 

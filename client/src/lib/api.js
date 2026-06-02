@@ -34,6 +34,11 @@ export const apiFetch = async (path, options = {}) => {
     }
   }
 
+  const adminToken = localStorage.getItem('kingmops:adminToken');
+  if (adminToken && (path.startsWith('/admin') || path === '/auth/me')) {
+    headers.set('x-admin-token', adminToken);
+  }
+
   const demoRole = localStorage.getItem('kingmops:demoRole');
   const demoUser = localStorage.getItem('kingmops:demoUid');
   if (demoRole) {

@@ -1,8 +1,18 @@
 import { firebaseAdmin, isFirebaseEnabled } from '../lib/firebaseAdmin.js';
 import { getUserProfile } from '../lib/store.js';
+import { verifyAdminToken } from '../lib/adminSession.js';
 
 export const requireAuth = async (req, res, next) => {
   try {
+    const adminToken = req.header('x-admin-token');
+    if (adminToken) {
+      const adminUser = verifyAdminToken(adminToken);
+      if (adminUser) {
+        req.user = adminUser;
+        return next();
+      }
+    }
+
     if (!isFirebaseEnabled) {
       const token = req.header('authorization')?.replace(/^Bearer\s+/i, '');
       if (token) {

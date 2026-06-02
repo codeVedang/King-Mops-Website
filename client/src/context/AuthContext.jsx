@@ -27,10 +27,22 @@ const getDemoUser = () => {
   return raw ? JSON.parse(raw) : null;
 };
 
+const getAdminUser = () => {
+  const token = localStorage.getItem('kingmops:adminToken');
+  const raw = localStorage.getItem('kingmops:adminUser');
+  if (!token || !raw) return null;
+  return JSON.parse(raw);
+};
+
 const setDemoSession = (user) => {
   localStorage.setItem('kingmops:demoUser', JSON.stringify(user));
   localStorage.setItem('kingmops:demoUid', user.uid);
   localStorage.setItem('kingmops:demoRole', user.role);
+};
+
+const setAdminSession = ({ token, user }) => {
+  localStorage.setItem('kingmops:adminToken', token);
+  localStorage.setItem('kingmops:adminUser', JSON.stringify(user));
 };
 
 export const AuthProvider = ({ children }) => {
@@ -51,6 +63,20 @@ export const AuthProvider = ({ children }) => {
   };
 
   useEffect(() => {
+    const adminUser = getAdminUser();
+    if (adminUser?.role === 'admin') {
+      setUser(adminUser);
+      setProfile({
+        uid: adminUser.uid,
+        name: adminUser.displayName || 'King Mops Admin',
+        email: adminUser.email,
+        role: 'admin',
+        admin: true
+      });
+      setLoading(false);
+      return undefined;
+    }
+
     const demoUser = getDemoUser();
     if (demoUser && !isFirebaseConfigured) {
       setUser(demoUser);
@@ -177,6 +203,17 @@ export const AuthProvider = ({ children }) => {
   const login = async ({ email, password, admin = false }) => {
     if (!email || !password) throw new Error('Email and password are required.');
 
+    if (admin) {
+      const data = await apiFetch('/auth/admin-login', {
+        method: 'POST',
+        body: JSON.stringify({ email, password })
+      });
+      setAdminSession(data);
+      setUser(data.user);
+      setProfile(data.profile);
+      return data.user;
+    }
+
     const isAdminLogin = email === demoAdminEmail && password === demoAdminPassword;
     if (!isFirebaseConfigured) {
       if (admin && !isAdminLogin) {
@@ -233,6 +270,8 @@ export const AuthProvider = ({ children }) => {
 
   const logout = async () => {
     if (isFirebaseConfigured) await signOut(auth);
+    localStorage.removeItem('kingmops:adminToken');
+    localStorage.removeItem('kingmops:adminUser');
     localStorage.removeItem('kingmops:demoUser');
     localStorage.removeItem('kingmops:demoUid');
     localStorage.removeItem('kingmops:demoRole');

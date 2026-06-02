@@ -9,12 +9,14 @@ const navItems = [
   { to: '/shop', label: 'Shop' },
   { to: '/shop?category=Mops', label: 'Mops' },
   { to: '/shop?category=Wipers', label: 'Wipers' },
-  { to: '/shop?category=Cleaning%20Products', label: 'Cleaning Products' }
+  { to: '/shop?category=Cleaning%20Products', label: 'Cleaning Products' },
+  { to: '/about', label: 'About' },
+  { to: '/contact', label: 'Contact' }
 ];
 
 export const Layout = () => {
   const [open, setOpen] = useState(false);
-  const { user, profile, logout } = useAuth();
+  const { user, profile, logout, isAdmin } = useAuth();
   const { summary } = useCart();
   const navigate = useNavigate();
 
@@ -48,7 +50,7 @@ export const Layout = () => {
             <ShoppingBag size={20} />
             {summary.count > 0 && <span>{summary.count}</span>}
           </Link>
-          {user ? (
+          {user && !isAdmin ? (
             <div className="account-chip">
               <Link to="/account" aria-label="My account">
                 <User size={18} />

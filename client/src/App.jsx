@@ -13,6 +13,8 @@ import { AdminOrderDetail, AdminOrders } from './pages/AdminOrders.jsx';
 import { AdminProducts } from './pages/AdminProducts.jsx';
 import { Cart } from './pages/Cart.jsx';
 import { Checkout } from './pages/Checkout.jsx';
+import { About } from './pages/About.jsx';
+import { Contact } from './pages/Contact.jsx';
 import { Home } from './pages/Home.jsx';
 import { Login } from './pages/Login.jsx';
 import { OrderConfirmation } from './pages/OrderConfirmation.jsx';
@@ -30,6 +32,8 @@ export const App = () => (
             <Route path="products/:id" element={<ProductDetail />} />
             <Route path="cart" element={<Cart />} />
             <Route path="login" element={<Login />} />
+            <Route path="about" element={<About />} />
+            <Route path="contact" element={<Contact />} />
 
             <Route element={<ProtectedRoute />}>
               <Route path="checkout" element={<Checkout />} />
