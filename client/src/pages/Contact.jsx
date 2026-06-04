@@ -1,16 +1,15 @@
 import { Mail, MapPin, MessageCircle, Phone, Send } from 'lucide-react';
-import { useState } from 'react';
 import { Link } from 'react-router-dom';
 
 const contactItems = [
   {
     label: 'Email',
-    value: 'support@kingbrandmops.in',
+    value: 'crowdbuzz.company@gmail.com',
     icon: Mail
   },
   {
     label: 'Phone',
-    value: '+91 98765 43210',
+    value: '+91 99498 34578',
     icon: Phone
   },
   {
@@ -21,19 +20,6 @@ const contactItems = [
 ];
 
 export const Contact = () => {
-  const [sent, setSent] = useState(false);
-
-  const submit = (event) => {
-    event.preventDefault();
-    const form = new FormData(event.currentTarget);
-    const name = form.get('name') || '';
-    const phone = form.get('phone') || '';
-    const message = form.get('message') || '';
-    const body = encodeURIComponent(`Name: ${name}\nPhone: ${phone}\n\n${message}`);
-    window.location.href = `mailto:support@kingbrandmops.in?subject=King Brand Mops Enquiry&body=${body}`;
-    setSent(true);
-  };
-
   return (
     <section className="contact-page">
     <div className="contact-hero">
@@ -70,24 +56,33 @@ export const Contact = () => {
         </div>
       </div>
 
-      <form className="contact-form" onSubmit={submit}>
+      <form className="contact-form" action="https://formsubmit.co/crowdbuzz.company@gmail.com" method="POST">
+        <input type="hidden" name="_subject" value="King Brand Mops Enquiry" />
+        <input type="hidden" name="_template" value="table" />
+        <input type="hidden" name="_captcha" value="false" />
         <label>
           Full Name
-          <input name="name" placeholder="Your name" />
+          <input name="name" placeholder="Your name" autoComplete="off" required />
         </label>
         <label>
           Phone Number
-          <input name="phone" placeholder="10-digit mobile number" />
+          <input
+            name="phone"
+            placeholder="10-digit mobile number"
+            pattern="[6-9][0-9]{9}"
+            inputMode="numeric"
+            autoComplete="off"
+            required
+          />
         </label>
         <label className="full-span">
           Message
-          <textarea name="message" placeholder="Tell us what you need help with" />
+          <textarea name="message" placeholder="Tell us what you need help with" autoComplete="off" required />
         </label>
         <button type="submit" className="primary-button full-span">
           <Send size={18} />
           Send Enquiry
         </button>
-        {sent && <p className="form-success full-span">Email draft opened with your enquiry.</p>}
       </form>
     </section>
 

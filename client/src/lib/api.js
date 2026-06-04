@@ -24,9 +24,12 @@ export const apiFetch = async (path, options = {}) => {
     headers.set('Content-Type', 'application/json');
   }
 
+  const adminToken = localStorage.getItem('kingmops:adminToken');
+  const shouldUseAdminToken = adminToken && (path.startsWith('/admin') || path === '/auth/me');
+
   if (options.authToken) {
     headers.set('Authorization', `Bearer ${options.authToken}`);
-  } else if (isFirebaseConfigured) {
+  } else if (!shouldUseAdminToken && isFirebaseConfigured) {
     const firebaseUser = await waitForFirebaseUser();
     if (firebaseUser) {
       const token = await firebaseUser.getIdToken();
@@ -34,8 +37,7 @@ export const apiFetch = async (path, options = {}) => {
     }
   }
 
-  const adminToken = localStorage.getItem('kingmops:adminToken');
-  if (adminToken && (path.startsWith('/admin') || path === '/auth/me')) {
+  if (shouldUseAdminToken) {
     headers.set('x-admin-token', adminToken);
   }
 

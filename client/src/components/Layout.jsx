@@ -1,6 +1,7 @@
 import { LogOut, Menu, PackageSearch, ShoppingBag, User, X } from 'lucide-react';
 import { useState } from 'react';
 import { Link, NavLink, Outlet, useNavigate } from 'react-router-dom';
+import { BrandLogo } from './BrandLogo.jsx';
 import { useAuth } from '../context/AuthContext.jsx';
 import { useCart } from '../context/CartContext.jsx';
 
@@ -30,8 +31,7 @@ export const Layout = () => {
     <div className="app-shell">
       <header className="site-header">
         <Link className="brand-mark" to="/" onClick={() => setOpen(false)}>
-          <span>King</span>
-          <strong>Brand Mops</strong>
+          <BrandLogo />
         </Link>
 
         <nav className={`primary-nav ${open ? 'is-open' : ''}`}>
@@ -82,13 +82,13 @@ export const Layout = () => {
 
       <footer className="site-footer">
         <div>
-          <h2>King Brand Mops</h2>
+          <BrandLogo light />
           <p>Sri Tirumala Products, Hyderabad, India.</p>
         </div>
         <div>
           <strong>Contact</strong>
-          <p>support@kingbrandmops.in</p>
-          <p>+91 98765 43210</p>
+          <p>crowdbuzz.company@gmail.com</p>
+          <p>+91 99498 34578</p>
         </div>
         <div>
           <strong>Social</strong>

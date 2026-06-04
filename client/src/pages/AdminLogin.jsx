@@ -1,6 +1,7 @@
 import { Shield } from 'lucide-react';
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { BrandLogo } from '../components/BrandLogo.jsx';
 import { useAuth } from '../context/AuthContext.jsx';
 
 export const AdminLogin = () => {
@@ -25,7 +26,7 @@ export const AdminLogin = () => {
   return (
     <section className="admin-login-page">
       <div className="auth-panel">
-        <p className="eyebrow">King Brand Mops</p>
+        <BrandLogo admin />
         <h1>Admin Login</h1>
         <form className="form-grid" onSubmit={submit}>
           <label>

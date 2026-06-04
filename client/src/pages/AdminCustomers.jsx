@@ -15,7 +15,7 @@ export const AdminCustomers = () => {
   const filtered = useMemo(() => {
     const term = search.toLowerCase();
     return customers.filter((customer) =>
-      `${customer.name} ${customer.email} ${customer.phone}`.toLowerCase().includes(term)
+      `${customer.name} ${customer.phone} ${customer.role}`.toLowerCase().includes(term)
     );
   }, [customers, search]);
 
@@ -35,9 +35,9 @@ export const AdminCustomers = () => {
         <div className="data-table customer-table">
           <div className="table-head">
             <span>Name</span>
-            <span>Email</span>
             <span>Phone</span>
             <span>Registered</span>
+            <span>Role</span>
           </div>
           {filtered.map((customer) => (
             <Link className="table-row" to={`/admin/customers/${customer.uid}`} key={customer.uid}>
@@ -45,9 +45,9 @@ export const AdminCustomers = () => {
                 <UserRound size={16} />
                 {customer.name}
               </span>
-              <span>{customer.email}</span>
-              <span>{customer.phone}</span>
+              <span>{customer.phone || 'Mobile only'}</span>
               <span>{formatDate(customer.createdAt)}</span>
+              <span>{customer.role || 'customer'}</span>
             </Link>
           ))}
         </div>
@@ -77,8 +77,7 @@ export const AdminCustomerDetail = () => {
       <div className="order-detail-grid">
         <section className="admin-panel">
           <h2>Profile</h2>
-          <p>{customer.email}</p>
-          <p>{customer.phone}</p>
+          <p>{customer.phone || 'Mobile number not saved'}</p>
           <p>Registered {formatDate(customer.createdAt)}</p>
           {(customer.addresses || []).map((address) => (
             <div className="address-row" key={address.id}>

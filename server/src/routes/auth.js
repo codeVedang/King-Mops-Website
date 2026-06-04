@@ -58,7 +58,8 @@ authRouter.post('/profile', requireAuth, async (req, res, next) => {
   try {
     const profile = await createOrUpdateUserProfile(req.user.uid, {
       ...req.body,
-      email: req.body.email || req.user.email
+      email: req.body.email || req.user.email || '',
+      phone: req.body.phone || String(req.user.phone_number || '').replace(/^\+91/, '')
     });
     res.status(201).json({ profile });
   } catch (error) {

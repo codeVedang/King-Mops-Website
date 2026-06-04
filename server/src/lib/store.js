@@ -183,24 +183,25 @@ export const getUserProfile = async (uid) => {
 
 export const createOrUpdateUserProfile = async (uid, payload) => {
   const profile = {
-    name: payload.name?.trim(),
-    email: payload.email?.trim(),
-    phone: payload.phone?.trim(),
+    name: payload.name?.trim() || payload.phone?.trim() || 'Customer',
+    email: payload.email?.trim() || '',
+    phone: payload.phone?.trim() || '',
     phoneVerified: Boolean(payload.phoneVerified),
     role: payload.role === 'admin' ? 'admin' : 'customer',
     admin: payload.role === 'admin',
     appScope: env.appScope,
-    addresses: Array.isArray(payload.addresses) ? payload.addresses : [],
     updatedAt: new Date()
   };
 
   if (isFirebaseEnabled) {
     const ref = db.collection('users').doc(uid);
     const existing = await ref.get();
+    const existingData = existing.exists ? existing.data() : {};
     await ref.set(
       {
         ...profile,
-        createdAt: existing.exists ? existing.data().createdAt : new Date()
+        addresses: Array.isArray(payload.addresses) ? payload.addresses : existingData.addresses || [],
+        createdAt: existing.exists ? existingData.createdAt : new Date()
       },
       { merge: true }
     );
@@ -211,6 +212,7 @@ export const createOrUpdateUserProfile = async (uid, payload) => {
   const demoProfile = {
     uid,
     ...profile,
+    addresses: Array.isArray(payload.addresses) ? payload.addresses : demoUsers[index]?.addresses || [],
     createdAt: index >= 0 ? demoUsers[index].createdAt : nowIso(),
     updatedAt: nowIso()
   };

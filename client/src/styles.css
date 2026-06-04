@@ -10,9 +10,10 @@
   --muted: #63716c;
   --line: #dce3de;
   --paper: #ffffff;
-  --teal: #0f766e;
-  --teal-dark: #115e59;
-  --amber: #f6b73c;
+  --teal: #f97316;
+  --teal-dark: #c2410c;
+  --amber: #fbbf24;
+  --gold: #d6a84f;
   --red: #dc2626;
   --blue: #2563eb;
 }
@@ -72,20 +73,62 @@ img {
 }
 
 .brand-mark {
-  display: grid;
-  gap: 0;
+  display: inline-flex;
+  align-items: center;
+  min-width: max-content;
+}
+
+.king-logo {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
   line-height: 1;
 }
 
-.brand-mark span {
+.king-logo-crown {
+  width: 48px;
+  height: 34px;
+  display: inline-flex;
+  flex: 0 0 auto;
+}
+
+.king-logo-crown svg {
+  width: 100%;
+  height: 100%;
+  fill: #f8d56b;
+  stroke: #dc2626;
+  stroke-width: 2;
+  stroke-linejoin: round;
+}
+
+.king-logo-copy {
+  display: grid;
+  gap: 2px;
+}
+
+.king-logo-copy strong {
+  color: #dc2626;
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: clamp(28px, 3vw, 38px);
+  font-weight: 900;
+  letter-spacing: 0;
+  text-shadow: 0 1px 0 #f7d278, 1px 0 0 #f7d278;
+}
+
+.king-logo-copy small {
+  color: var(--ink);
   font-size: 12px;
-  color: var(--teal);
-  font-weight: 800;
+  font-weight: 900;
   text-transform: uppercase;
 }
 
-.brand-mark strong {
-  font-size: clamp(18px, 2vw, 24px);
+.king-logo-light .king-logo-copy small,
+.king-logo-light .king-logo-copy strong {
+  color: #ffffff;
+}
+
+.king-logo-light .king-logo-copy strong {
+  text-shadow: 0 1px 0 #f7d278;
 }
 
 .primary-nav {
@@ -105,7 +148,7 @@ img {
 
 .primary-nav a.active,
 .primary-nav a:hover {
-  background: #e6f3ef;
+  background: #fff3e7;
   color: var(--teal-dark);
 }
 
@@ -140,12 +183,12 @@ img {
 .icon-button {
   width: 42px;
   color: var(--ink);
-  background: #eef3ef;
-  border-color: #d7e2dc;
+  background: #fff7ed;
+  border-color: #fed7aa;
 }
 
 .icon-button:hover {
-  background: #dfe9e3;
+  background: #ffedd5;
 }
 
 .icon-button.danger {
@@ -292,7 +335,7 @@ img {
   align-items: end;
   padding: 0 clamp(18px, 5vw, 72px) 62px;
   background:
-    linear-gradient(90deg, rgba(8, 12, 11, 0.88), rgba(21, 57, 51, 0.56), rgba(18, 21, 18, 0.14)),
+    linear-gradient(90deg, rgba(32, 17, 8, 0.88), rgba(194, 65, 12, 0.58), rgba(18, 21, 18, 0.14)),
     url("https://images.unsplash.com/photo-1527515637462-cff94eecc1ac?auto=format&fit=crop&w=1900&q=82");
   background-size: cover;
   background-position: center;
@@ -508,7 +551,7 @@ img {
 .home-product-notes span {
   padding: 8px 10px;
   border-radius: 8px;
-  background: #edf7f4;
+  background: #fff7ed;
   color: var(--teal-dark);
   font-size: 12px;
   font-weight: 900;
@@ -533,8 +576,8 @@ img {
 }
 
 .home-solution-card:hover {
-  border-color: #9ecac2;
-  box-shadow: 0 16px 34px rgba(15, 118, 110, 0.12);
+  border-color: #fdba74;
+  box-shadow: 0 16px 34px rgba(249, 115, 22, 0.14);
 }
 
 .home-solution-card svg {
@@ -625,7 +668,7 @@ img {
 
 .about-hero {
   background:
-    linear-gradient(90deg, rgba(9, 17, 15, 0.86), rgba(15, 118, 110, 0.42)),
+    linear-gradient(90deg, rgba(31, 18, 9, 0.88), rgba(194, 65, 12, 0.46)),
     url("https://images.unsplash.com/photo-1581578731548-c64695cc6952?auto=format&fit=crop&w=1800&q=82");
 }
 
@@ -944,6 +987,18 @@ img {
   padding: 16px;
 }
 
+.product-card-actions {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 8px;
+}
+
+.product-card-actions .primary-button,
+.product-card-actions .secondary-button {
+  min-width: 0;
+  padding: 0 10px;
+}
+
 .product-card h3,
 .product-info-panel h1,
 .account-panel h2,
@@ -1244,7 +1299,7 @@ img {
 .segmented-control {
   display: grid;
   grid-template-columns: repeat(2, 1fr);
-  background: #eef3ef;
+  background: #fff3e7;
   border-radius: 8px;
   padding: 4px;
   margin: 18px 0;
@@ -1432,20 +1487,17 @@ img {
 }
 
 .admin-brand {
-  display: grid;
-  gap: 4px;
+  display: inline-flex;
+  align-items: center;
 }
 
-.admin-brand span {
-  color: var(--teal);
-  font-size: 12px;
-  font-weight: 900;
-  text-transform: uppercase;
+.admin-brand .king-logo-crown {
+  width: 42px;
+  height: 30px;
 }
 
-.admin-brand strong {
-  font-size: 26px;
-  line-height: 1;
+.admin-brand .king-logo-copy strong {
+  font-size: 24px;
 }
 
 .admin-sidebar nav {
@@ -1467,7 +1519,7 @@ img {
 .admin-sidebar a.active,
 .admin-sidebar a:hover {
   color: var(--teal-dark);
-  background: #e6f3ef;
+  background: #fff3e7;
 }
 
 .admin-user-panel {
@@ -1503,7 +1555,7 @@ img {
   place-items: center;
   padding: 42px 18px;
   background:
-    linear-gradient(90deg, rgba(17, 24, 22, 0.88), rgba(15, 118, 110, 0.76)),
+    linear-gradient(90deg, rgba(31, 18, 9, 0.9), rgba(194, 65, 12, 0.78)),
     url("https://images.unsplash.com/photo-1563453392212-326f5e854473?auto=format&fit=crop&w=1600&q=80");
   background-size: cover;
   background-position: center;
@@ -1549,7 +1601,7 @@ img {
 
 .customer-table .table-head,
 .customer-table .table-row {
-  grid-template-columns: 1fr 1.3fr 0.8fr 0.9fr;
+  grid-template-columns: 1.2fr 1fr 0.9fr 0.7fr;
 }
 
 .analytics-table .table-head,
@@ -1603,6 +1655,45 @@ img {
   aspect-ratio: 1 / 1;
   border-radius: 8px;
   background: #edf1ef;
+}
+
+.modal-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 100;
+  display: grid;
+  place-items: center;
+  padding: 24px;
+  background: rgba(23, 32, 29, 0.58);
+}
+
+.admin-product-modal {
+  width: min(760px, 100%);
+  max-height: calc(100vh - 48px);
+  overflow: auto;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: #ffffff;
+  padding: 22px;
+  box-shadow: 0 24px 70px rgba(23, 32, 29, 0.24);
+}
+
+.modal-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 16px;
+}
+
+.modal-header h2 {
+  margin: 0;
+  font-size: clamp(26px, 4vw, 38px);
+  line-height: 1.08;
+}
+
+.contact-form > input[type="hidden"] {
+  display: none;
 }
 
 .page-loading,

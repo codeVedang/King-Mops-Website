@@ -1,25 +1,18 @@
 import {
-  createUserWithEmailAndPassword,
-  linkWithCredential,
   onAuthStateChanged,
   PhoneAuthProvider,
   RecaptchaVerifier,
-  sendEmailVerification,
-  sendPasswordResetEmail,
-  signInWithEmailAndPassword,
-  signInWithPopup,
+  signInWithCredential,
   signOut,
   updateProfile
 } from 'firebase/auth';
 import { createContext, useContext, useEffect, useMemo, useState } from 'react';
 import { apiFetch } from '../lib/api.js';
-import { auth, googleProvider, isFirebaseConfigured } from '../lib/firebase.js';
+import { auth, isFirebaseConfigured } from '../lib/firebase.js';
 import { validatePhone } from '../lib/format.js';
 
 const AuthContext = createContext(null);
 
-const demoAdminEmail = import.meta.env.VITE_DEMO_ADMIN_EMAIL || 'admin@kingmops.local';
-const demoAdminPassword = import.meta.env.VITE_DEMO_ADMIN_PASSWORD || 'admin123';
 const demoOtpCode = '123456';
 
 const getDemoUser = () => {
@@ -56,6 +49,8 @@ const clearPhoneRecaptcha = () => {
   const container = document.getElementById('phone-recaptcha-container');
   if (container) container.innerHTML = '';
 };
+
+const fallbackCustomerName = (phone) => `Customer ${String(phone).slice(-4)}`;
 
 export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
@@ -172,61 +167,73 @@ export const AuthProvider = ({ children }) => {
     return true;
   };
 
-  const register = async ({ name, email, password, confirmPassword, phone }) => {
-    if (!name || !email || !password || !confirmPassword || !phone) {
-      throw new Error('All registration fields are required.');
-    }
-    if (password !== confirmPassword) {
-      throw new Error('Passwords do not match.');
-    }
+  const signInWithPhone = async ({ name = '', phone }) => {
     if (!validatePhone(phone)) {
       throw new Error('Enter a valid 10-digit Indian mobile number.');
     }
     if (!phoneVerification?.verified || phoneVerification.phone !== phone) {
-      throw new Error('Verify your mobile number with OTP before registration.');
+      throw new Error('Verify your mobile number with OTP first.');
     }
+
+    const displayName = name.trim() || fallbackCustomerName(phone);
 
     if (!isFirebaseConfigured) {
       const demoUser = {
-        uid: `demo_${Date.now()}`,
-        email,
-        displayName: name,
-        emailVerified: true,
+        uid: `phone_${phone}`,
+        phoneNumber: `+91${phone}`,
+        displayName,
         role: 'customer'
       };
       setDemoSession(demoUser);
       setUser(demoUser);
       const saved = await apiFetch('/auth/profile', {
         method: 'POST',
-        body: JSON.stringify({ name, email, phone, phoneVerified: true, role: 'customer' })
+        body: JSON.stringify({
+          name: displayName,
+          phone,
+          phoneVerified: true,
+          role: 'customer'
+        })
       });
       setProfile(saved.profile);
+      setPhoneVerification(null);
       return demoUser;
     }
 
-    const credential = await createUserWithEmailAndPassword(auth, email, password);
-    try {
-      await updateProfile(credential.user, { displayName: name });
-      if (phoneVerification.credential) {
-        await linkWithCredential(credential.user, phoneVerification.credential);
-      }
-      await sendEmailVerification(credential.user);
+    const credential = await signInWithCredential(auth, phoneVerification.credential);
+    if (displayName && credential.user.displayName !== displayName) {
+      await updateProfile(credential.user, { displayName });
+    }
+    setUser(credential.user);
+    const token = await credential.user.getIdToken();
+    const existingProfile = await refreshProfile(token);
+    if (!existingProfile || name.trim() || existingProfile.phone !== phone) {
       const saved = await apiFetch('/auth/profile', {
+        authToken: token,
         method: 'POST',
-        body: JSON.stringify({ name, email, phone, phoneVerified: true, role: 'customer' })
+        body: JSON.stringify({
+          name: name.trim() || existingProfile?.name || displayName,
+          phone,
+          phoneVerified: true,
+          role: 'customer'
+        })
       });
       setProfile(saved.profile);
-      return credential.user;
-    } catch (error) {
-      await credential.user.delete().catch(() => {});
-      throw error;
     }
+    setPhoneVerification(null);
+    return credential.user;
   };
 
-  const login = async ({ email, password, admin = false }) => {
-    if (!email || !password) throw new Error('Email and password are required.');
+  const register = async ({ name, phone }) => {
+    if (!name?.trim()) {
+      throw new Error('Enter your full name.');
+    }
+    return signInWithPhone({ name, phone });
+  };
 
+  const login = async ({ email, password, admin = false, phone, name }) => {
     if (admin) {
+      if (!email || !password) throw new Error('Admin email and password are required.');
       const data = await apiFetch('/auth/admin-login', {
         method: 'POST',
         body: JSON.stringify({ email, password })
@@ -237,58 +244,7 @@ export const AuthProvider = ({ children }) => {
       return data.user;
     }
 
-    const isAdminLogin = email === demoAdminEmail && password === demoAdminPassword;
-    if (!isFirebaseConfigured) {
-      if (admin && !isAdminLogin) {
-        throw new Error('Use the configured admin credentials for admin access.');
-      }
-      const role = isAdminLogin ? 'admin' : 'customer';
-      const demoUser = {
-        uid: role === 'admin' ? 'demo-admin' : 'demo-customer',
-        email,
-        displayName: role === 'admin' ? 'King Mops Admin' : 'Demo Customer',
-        emailVerified: true,
-        role
-      };
-      setDemoSession(demoUser);
-      setUser(demoUser);
-      await refreshProfile();
-      return demoUser;
-    }
-
-    const credential = await signInWithEmailAndPassword(auth, email, password);
-    setUser(credential.user);
-    const token = await credential.user.getIdToken();
-    await refreshProfile(token);
-    return credential.user;
-  };
-
-  const loginWithGoogle = async () => {
-    if (!isFirebaseConfigured) {
-      return login({ email: 'customer@kingmops.local', password: 'demo' });
-    }
-    const credential = await signInWithPopup(auth, googleProvider);
-    const profileData = await refreshProfile();
-    if (!profileData) {
-      await apiFetch('/auth/profile', {
-        method: 'POST',
-        body: JSON.stringify({
-          name: credential.user.displayName || 'Google User',
-          email: credential.user.email,
-          phone: '',
-          role: 'customer'
-        })
-      });
-      await refreshProfile();
-    }
-    return credential.user;
-  };
-
-  const resetPassword = async (email) => {
-    if (!email) throw new Error('Enter your email address.');
-    if (!isFirebaseConfigured) return true;
-    await sendPasswordResetEmail(auth, email);
-    return true;
+    return signInWithPhone({ name, phone });
   };
 
   const logout = async () => {
@@ -299,6 +255,7 @@ export const AuthProvider = ({ children }) => {
     localStorage.removeItem('kingmops:demoUid');
     localStorage.removeItem('kingmops:demoRole');
     clearPhoneRecaptcha();
+    setPhoneVerification(null);
     setUser(null);
     setProfile(null);
   };
@@ -312,11 +269,9 @@ export const AuthProvider = ({ children }) => {
       isFirebaseConfigured,
       register,
       login,
-      loginWithGoogle,
       sendPhoneOtp,
       verifyPhoneOtp,
       phoneVerification,
-      resetPassword,
       logout,
       refreshProfile
     }),

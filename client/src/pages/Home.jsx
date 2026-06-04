@@ -9,7 +9,8 @@ import {
   Search,
   ShoppingCart,
   Store,
-  Truck
+  Truck,
+  Zap
 } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
@@ -71,6 +72,11 @@ export const Home = () => {
     event.preventDefault();
     const query = search.trim();
     navigate(query ? `/shop?search=${encodeURIComponent(query)}` : '/shop');
+  };
+
+  const buyNow = (product) => {
+    addItem(product);
+    navigate('/checkout');
   };
 
   return (
@@ -163,6 +169,10 @@ export const Home = () => {
                 <button type="button" className="primary-button" onClick={() => addItem(spotlight)}>
                   <ShoppingCart size={18} />
                   Add to Cart
+                </button>
+                <button type="button" className="secondary-button" onClick={() => buyNow(spotlight)}>
+                  <Zap size={18} />
+                  Buy Now
                 </button>
                 <Link className="secondary-button" to={`/products/${spotlight.id}`}>
                   View Details

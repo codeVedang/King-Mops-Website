@@ -2,7 +2,6 @@ import { initializeApp } from 'firebase/app';
 import {
   browserLocalPersistence,
   getAuth,
-  GoogleAuthProvider,
   setPersistence
 } from 'firebase/auth';
 import { getStorage } from 'firebase/storage';
@@ -21,7 +20,6 @@ export const isFirebaseConfigured = Object.values(firebaseConfig).every(Boolean)
 export const firebaseApp = isFirebaseConfigured ? initializeApp(firebaseConfig) : null;
 export const auth = firebaseApp ? getAuth(firebaseApp) : null;
 export const storage = firebaseApp ? getStorage(firebaseApp) : null;
-export const googleProvider = firebaseApp ? new GoogleAuthProvider() : null;
 
 if (auth) {
   setPersistence(auth, browserLocalPersistence).catch(() => {});

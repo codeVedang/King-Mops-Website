@@ -1,10 +1,16 @@
-import { ShoppingCart } from 'lucide-react';
-import { Link } from 'react-router-dom';
+import { ShoppingCart, Zap } from 'lucide-react';
+import { Link, useNavigate } from 'react-router-dom';
 import { useCart } from '../context/CartContext.jsx';
 import { formatINR } from '../lib/format.js';
 
 export const ProductCard = ({ product }) => {
   const { addItem } = useCart();
+  const navigate = useNavigate();
+
+  const buyNow = () => {
+    addItem(product);
+    navigate('/checkout');
+  };
 
   return (
     <article className="product-card">
@@ -22,10 +28,16 @@ export const ProductCard = ({ product }) => {
           <strong>{formatINR(product.pricePaise)}</strong>
           {product.mrpPaise > product.pricePaise && <s>{formatINR(product.mrpPaise)}</s>}
         </div>
-        <button type="button" className="primary-button full-width" onClick={() => addItem(product)}>
-          <ShoppingCart size={18} />
-          Add to Cart
-        </button>
+        <div className="product-card-actions">
+          <button type="button" className="primary-button" onClick={() => addItem(product)}>
+            <ShoppingCart size={18} />
+            Add to Cart
+          </button>
+          <button type="button" className="secondary-button" onClick={buyNow}>
+            <Zap size={18} />
+            Buy Now
+          </button>
+        </div>
       </div>
     </article>
   );

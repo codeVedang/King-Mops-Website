@@ -7,6 +7,7 @@ import {
   UsersRound
 } from 'lucide-react';
 import { Link, NavLink, Outlet, useNavigate } from 'react-router-dom';
+import { BrandLogo } from './BrandLogo.jsx';
 import { useAuth } from '../context/AuthContext.jsx';
 
 const adminLinks = [
@@ -30,8 +31,7 @@ export const AdminShell = () => {
     <section className="admin-only-shell">
       <aside className="admin-sidebar">
         <Link className="admin-brand" to="/admin">
-          <span>King Brand Mops</span>
-          <strong>Admin</strong>
+          <BrandLogo admin />
         </Link>
         <nav>
           {adminLinks.map((item) => {

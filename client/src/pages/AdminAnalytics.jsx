@@ -15,8 +15,8 @@ import {
 import { apiFetch } from '../lib/api.js';
 import { formatINR } from '../lib/format.js';
 
-const statusColors = ['#0f766e', '#2563eb', '#f59e0b', '#16a34a', '#dc2626'];
-const categoryColors = ['#0f766e', '#f6b73c', '#2563eb', '#16a34a', '#dc2626'];
+const statusColors = ['#f97316', '#2563eb', '#f59e0b', '#16a34a', '#dc2626'];
+const categoryColors = ['#f97316', '#fbbf24', '#2563eb', '#16a34a', '#dc2626'];
 
 const currencyTooltip = (value) => formatINR(Number(value || 0) * 100);
 
@@ -93,7 +93,7 @@ export const AdminAnalytics = () => {
               <XAxis dataKey="date" tick={{ fontSize: 11 }} />
               <YAxis />
               <Tooltip formatter={currencyTooltip} />
-              <Bar dataKey="revenue" fill="#0f766e" radius={[4, 4, 0, 0]} />
+              <Bar dataKey="revenue" fill="#f97316" radius={[4, 4, 0, 0]} />
             </BarChart>
           </ResponsiveContainer>
         </section>

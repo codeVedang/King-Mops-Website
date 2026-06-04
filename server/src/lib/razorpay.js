@@ -31,7 +31,7 @@ export const createPaymentOrder = async ({ amountPaise, receipt }) => {
     const description = error?.error?.description || error?.message || 'Razorpay order creation failed.';
     const enhanced = new Error(
       description === 'Authentication failed'
-        ? 'Razorpay authentication failed. Please check that the Key ID and Key Secret are copied from the same Razorpay test account.'
+        ? 'Razorpay authentication failed. Please check that the Key ID and Key Secret are copied from the same Razorpay account and mode.'
         : description
     );
     enhanced.status = error.statusCode || error.status || 502;

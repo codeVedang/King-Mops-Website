@@ -95,15 +95,14 @@ export const Checkout = () => {
         order_id: orderData.razorpayOrderId,
         prefill: {
           name: address.fullName,
-          contact: address.phone,
-          email: profile?.email
+          contact: address.phone
         },
         handler: (payment) => verifyAndCreateOrder(payment, orderData.razorpayOrderId),
         modal: {
           ondismiss: () => setError('Payment was cancelled. You can retry anytime.')
         },
         theme: {
-          color: '#0f766e'
+          color: '#f97316'
         }
       });
       checkout.open();
