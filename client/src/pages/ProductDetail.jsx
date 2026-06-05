@@ -1,4 +1,4 @@
-import { ShoppingCart, Zap } from 'lucide-react';
+import { CheckCircle2, PackageCheck, ShieldCheck, ShoppingCart, Truck, Zap } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import { Link, useNavigate, useParams } from 'react-router-dom';
 import { ProductCard } from '../components/ProductCard.jsx';
@@ -31,7 +31,7 @@ export const ProductDetail = () => {
   };
 
   return (
-    <section className="page-wrap">
+    <section className="page-wrap product-detail-page">
       <div className="product-detail">
         <div className="product-gallery">
           <img className="main-product-image" src={activeImage} alt={product.name} />
@@ -45,7 +45,7 @@ export const ProductDetail = () => {
         </div>
 
         <div className="product-info-panel">
-          <p className="eyebrow">{product.category}</p>
+          <span className="product-chip">{product.category}</span>
           <h1>{product.name}</h1>
           <p>{product.description}</p>
           <div className="price-row detail-price">
@@ -72,11 +72,28 @@ export const ProductDetail = () => {
               Buy Now
             </button>
           </div>
+          <div className="product-trust-row">
+            <span>
+              <ShieldCheck size={18} />
+              Secure payment
+            </span>
+            <span>
+              <Truck size={18} />
+              Fast processing
+            </span>
+            <span>
+              <PackageCheck size={18} />
+              Live catalog
+            </span>
+          </div>
           <div className="spec-panel">
             <h2>Key Features</h2>
             <ul>
               {(product.specs || []).map((spec) => (
-                <li key={spec}>{spec}</li>
+                <li key={spec}>
+                  <CheckCircle2 size={16} />
+                  {spec}
+                </li>
               ))}
             </ul>
           </div>

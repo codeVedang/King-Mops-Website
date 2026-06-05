@@ -1,4 +1,4 @@
-import { Search } from 'lucide-react';
+import { SlidersHorizontal, Search, Sparkles } from 'lucide-react';
 import { useEffect, useMemo, useState } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import { ProductCard } from '../components/ProductCard.jsx';
@@ -45,13 +45,19 @@ export const Shop = () => {
   };
 
   return (
-    <section className="page-wrap">
-      <div className="page-title">
-        <p className="eyebrow">Shop</p>
-        <h1>Cleaning products catalog</h1>
+    <section className="page-wrap shop-page">
+      <div className="page-title premium-page-title">
+        <div>
+          <p className="eyebrow">Shop King Essentials</p>
+          <h1>Cleaning products catalog</h1>
+          <p>Filter premium daily-use mops, wipers, and cleaning products by need, price, and category.</p>
+        </div>
+        <span className="page-title-icon">
+          <Sparkles size={24} />
+        </span>
       </div>
 
-      <div className="shop-toolbar">
+      <div className="shop-toolbar premium-toolbar">
         <label className="search-field">
           <Search size={18} />
           <input
@@ -77,7 +83,10 @@ export const Shop = () => {
         <div className="page-loading">Loading products...</div>
       ) : (
         <>
-          <p className="result-count">{meta.total} product(s) found</p>
+          <p className="result-count">
+            <SlidersHorizontal size={16} />
+            {meta.total} product(s) found
+          </p>
           <div className="product-grid">
             {products.map((product) => (
               <ProductCard key={product.id} product={product} />

@@ -1,4 +1,4 @@
-import { Mail, MapPin, MessageCircle, Phone, Send } from 'lucide-react';
+import { Mail, MapPin, MessageCircle, Phone, Send, ShieldCheck, Sparkles } from 'lucide-react';
 import { Link } from 'react-router-dom';
 
 const contactItems = [
@@ -19,26 +19,26 @@ const contactItems = [
   }
 ];
 
-export const Contact = () => {
-  return (
-    <section className="contact-page">
-    <div className="contact-hero">
+export const Contact = () => (
+  <section className="contact-page">
+    <div className="contact-hero premium-subhero">
       <div>
         <p className="eyebrow">Contact Us</p>
-        <h1>Need help with products, orders, or bulk cleaning requirements?</h1>
+        <h1>Need help choosing a mop, wiper, or complete cleaning kit?</h1>
         <p>
-          Reach out to King Brand Mops for product questions, order support, business enquiries,
-          or help choosing the right cleaning kit.
+          Send your requirement and the King Mops team will help with product selection, order
+          support, business enquiries, and bulk cleaning needs.
         </p>
       </div>
     </div>
 
-    <section className="section-wrap contact-grid">
-      <div className="contact-info-panel">
-        <h2>Get in touch</h2>
+    <section className="section-wrap contact-grid reveal-on-scroll">
+      <div className="contact-info-panel premium-card">
+        <p className="eyebrow">Support Desk</p>
+        <h2>Fast answers for product and order questions</h2>
         <p>
-          Share your requirement and the team will help with product selection, order support, and
-          cleaning product information.
+          Share your cleaning need, space type, or order question. The team will guide you toward
+          the right product or next step.
         </p>
         <div className="contact-list">
           {contactItems.map((item) => {
@@ -56,7 +56,7 @@ export const Contact = () => {
         </div>
       </div>
 
-      <form className="contact-form" action="https://formsubmit.co/crowdbuzz.company@gmail.com" method="POST">
+      <form className="contact-form premium-form" action="https://formsubmit.co/crowdbuzz.company@gmail.com" method="POST">
         <input type="hidden" name="_subject" value="King Brand Mops Enquiry" />
         <input type="hidden" name="_template" value="table" />
         <input type="hidden" name="_captcha" value="false" />
@@ -86,18 +86,30 @@ export const Contact = () => {
       </form>
     </section>
 
-    <section className="contact-action-band">
+    <section className="contact-action-band premium-contact-band reveal-on-scroll">
       <div>
         <MessageCircle size={24} />
         <div>
           <strong>Want to order right now?</strong>
-          <span>Browse the catalog and add products directly to cart.</span>
+          <span>Browse the catalog and checkout securely through Razorpay.</span>
         </div>
       </div>
       <Link className="secondary-button" to="/shop">
         Open Shop
       </Link>
     </section>
+
+    <section className="section-wrap contact-assurance reveal-on-scroll">
+      <div>
+        <ShieldCheck size={22} />
+        <strong>Secure checkout</strong>
+        <span>Online payment handled through Razorpay.</span>
+      </div>
+      <div>
+        <Sparkles size={22} />
+        <strong>Clear buying help</strong>
+        <span>Ask for product, order, or bulk purchase support.</span>
+      </div>
     </section>
-  );
-};
+  </section>
+);
