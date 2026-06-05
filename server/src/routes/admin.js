@@ -3,10 +3,10 @@ import {
   getAnalytics,
   getCustomerWithOrders,
   getOrder,
+  deleteProduct,
   listAllOrders,
   listCustomers,
   listProducts,
-  softDeleteProduct,
   updateOrderStatus,
   upsertProduct
 } from '../lib/store.js';
@@ -88,9 +88,9 @@ adminRouter.put('/products/:id', async (req, res, next) => {
 
 adminRouter.delete('/products/:id', async (req, res, next) => {
   try {
-    const product = await softDeleteProduct(req.params.id);
+    const product = await deleteProduct(req.params.id);
     if (!product) return res.status(404).json({ message: 'Product not found.' });
-    res.json({ product });
+    res.json({ product, deleted: true });
   } catch (error) {
     next(error);
   }

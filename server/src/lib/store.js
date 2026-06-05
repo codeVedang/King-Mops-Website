@@ -173,6 +173,22 @@ export const softDeleteProduct = async (id) => {
   return publicProduct(product);
 };
 
+export const deleteProduct = async (id) => {
+  if (isFirebaseEnabled) {
+    const ref = db.collection('products').doc(id);
+    const doc = await ref.get();
+    if (!doc.exists) return null;
+    const product = publicProduct({ id: doc.id, ...doc.data() });
+    await ref.delete();
+    return product;
+  }
+
+  const index = demoProducts.findIndex((item) => item.id === id);
+  if (index < 0) return null;
+  const [product] = demoProducts.splice(index, 1);
+  return publicProduct(product);
+};
+
 export const getUserProfile = async (uid) => {
   if (isFirebaseEnabled) {
     const doc = await db.collection('users').doc(uid).get();

@@ -167,6 +167,40 @@ export const AuthProvider = ({ children }) => {
     return true;
   };
 
+  const savePhoneProfile = async ({ name, phone, authToken }) => {
+    const saved = await apiFetch('/auth/profile', {
+      ...(authToken ? { authToken } : {}),
+      method: 'POST',
+      body: JSON.stringify({
+        name: name.trim(),
+        phone,
+        phoneVerified: true,
+        role: 'customer'
+      })
+    });
+    setProfile(saved.profile);
+    setPhoneVerification(null);
+    return saved.profile;
+  };
+
+  const completePhoneProfile = async ({ name, phone }) => {
+    if (!name?.trim()) {
+      throw new Error('Enter your full name.');
+    }
+    if (!validatePhone(phone)) {
+      throw new Error('Enter a valid 10-digit Indian mobile number.');
+    }
+    if (!user) {
+      throw new Error('Verify your mobile number first.');
+    }
+
+    const authToken = isFirebaseConfigured && user.getIdToken ? await user.getIdToken() : null;
+    if (isFirebaseConfigured && auth.currentUser && auth.currentUser.displayName !== name.trim()) {
+      await updateProfile(auth.currentUser, { displayName: name.trim() });
+    }
+    return savePhoneProfile({ name, phone, authToken });
+  };
+
   const signInWithPhone = async ({ name = '', phone }) => {
     if (!validatePhone(phone)) {
       throw new Error('Enter a valid 10-digit Indian mobile number.');
@@ -186,42 +220,38 @@ export const AuthProvider = ({ children }) => {
       };
       setDemoSession(demoUser);
       setUser(demoUser);
-      const saved = await apiFetch('/auth/profile', {
-        method: 'POST',
-        body: JSON.stringify({
-          name: displayName,
-          phone,
-          phoneVerified: true,
-          role: 'customer'
-        })
-      });
-      setProfile(saved.profile);
+      const existingProfile = await refreshProfile();
+      if (!existingProfile && !name.trim()) {
+        return { user: demoUser, needsName: true };
+      }
+      if (name.trim() || !existingProfile) {
+        const profileData = await savePhoneProfile({ name: displayName, phone });
+        return { user: demoUser, profile: profileData, needsName: false };
+      }
       setPhoneVerification(null);
-      return demoUser;
+      return { user: demoUser, profile: existingProfile, needsName: false };
     }
 
     const credential = await signInWithCredential(auth, phoneVerification.credential);
-    if (displayName && credential.user.displayName !== displayName) {
+    if (name.trim() && credential.user.displayName !== name.trim()) {
       await updateProfile(credential.user, { displayName });
     }
     setUser(credential.user);
     const token = await credential.user.getIdToken();
     const existingProfile = await refreshProfile(token);
-    if (!existingProfile || name.trim() || existingProfile.phone !== phone) {
-      const saved = await apiFetch('/auth/profile', {
-        authToken: token,
-        method: 'POST',
-        body: JSON.stringify({
-          name: name.trim() || existingProfile?.name || displayName,
-          phone,
-          phoneVerified: true,
-          role: 'customer'
-        })
+    if (!existingProfile && !name.trim()) {
+      return { user: credential.user, needsName: true };
+    }
+    if (name.trim() || !existingProfile || existingProfile.phone !== phone) {
+      const profileData = await savePhoneProfile({
+        name: name.trim() || existingProfile?.name || displayName,
+        phone,
+        authToken: token
       });
-      setProfile(saved.profile);
+      return { user: credential.user, profile: profileData, needsName: false };
     }
     setPhoneVerification(null);
-    return credential.user;
+    return { user: credential.user, profile: existingProfile, needsName: false };
   };
 
   const register = async ({ name, phone }) => {
@@ -269,6 +299,7 @@ export const AuthProvider = ({ children }) => {
       isFirebaseConfigured,
       register,
       login,
+      completePhoneProfile,
       sendPhoneOtp,
       verifyPhoneOtp,
       phoneVerification,

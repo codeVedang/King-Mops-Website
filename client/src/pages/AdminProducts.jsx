@@ -144,14 +144,13 @@ export const AdminProducts = () => {
     }
   };
 
-  const softDelete = async (id) => {
-    const confirmed = window.confirm('Delete this product from the admin catalog?');
-    if (!confirmed) return;
+  const deleteProduct = async (id) => {
     setError('');
     setDeletingId(id);
     try {
       await apiFetch(`/admin/products/${id}`, { method: 'DELETE' });
       setProducts((current) => current.filter((product) => product.id !== id));
+      await loadProducts();
     } catch (err) {
       setError(err.message);
     } finally {
@@ -206,7 +205,7 @@ export const AdminProducts = () => {
                 <button
                   type="button"
                   className="icon-button danger"
-                  onClick={() => softDelete(product.id)}
+                  onClick={() => deleteProduct(product.id)}
                   disabled={deletingId === product.id}
                   aria-label={`Delete ${product.name}`}
                 >

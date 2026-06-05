@@ -62,7 +62,7 @@ export const Layout = () => {
             </div>
           ) : (
             <Link className="text-button" to="/login">
-              Login
+              Signup
             </Link>
           )}
           <button
