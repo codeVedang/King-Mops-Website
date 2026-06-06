@@ -1,12 +1,14 @@
 import express from 'express';
 import {
   getAnalytics,
+  getCheckoutSettings,
   getCustomerWithOrders,
   getOrder,
   deleteProduct,
   listAllOrders,
   listCustomers,
   listProducts,
+  updateCheckoutSettings,
   updateOrderStatus,
   upsertProduct
 } from '../lib/store.js';
@@ -19,6 +21,22 @@ adminRouter.use(requireAdmin);
 adminRouter.get('/metrics', async (req, res, next) => {
   try {
     res.json({ metrics: await getAnalytics() });
+  } catch (error) {
+    next(error);
+  }
+});
+
+adminRouter.get('/settings/checkout', async (req, res, next) => {
+  try {
+    res.json({ settings: await getCheckoutSettings() });
+  } catch (error) {
+    next(error);
+  }
+});
+
+adminRouter.put('/settings/checkout', async (req, res, next) => {
+  try {
+    res.json({ settings: await updateCheckoutSettings(req.body) });
   } catch (error) {
     next(error);
   }

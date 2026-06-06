@@ -8,6 +8,7 @@ import { authRouter } from './routes/auth.js';
 import { ordersRouter } from './routes/orders.js';
 import { paymentsRouter, paymentsWebhookHandler } from './routes/payments.js';
 import { adminRouter } from './routes/admin.js';
+import { settingsRouter } from './routes/settings.js';
 
 const app = express();
 
@@ -38,6 +39,7 @@ app.use('/api/products', productsRouter);
 app.use('/api/auth', authRouter);
 app.use('/api/orders', ordersRouter);
 app.use('/api/payments', paymentsRouter);
+app.use('/api/settings', settingsRouter);
 app.use('/api/admin', adminRouter);
 
 app.use((req, res) => {

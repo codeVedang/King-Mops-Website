@@ -4,6 +4,7 @@ import {
   LogOut,
   LayoutDashboard,
   PackageCheck,
+  ReceiptText,
   UsersRound
 } from 'lucide-react';
 import { Link, NavLink, Outlet, useNavigate } from 'react-router-dom';
@@ -15,6 +16,7 @@ const adminLinks = [
   { to: '/admin/orders', label: 'Orders', icon: PackageCheck },
   { to: '/admin/products', label: 'Products', icon: Boxes },
   { to: '/admin/customers', label: 'Customers', icon: UsersRound },
+  { to: '/admin/settings', label: 'GST / Delivery', icon: ReceiptText },
   { to: '/admin/analytics', label: 'Analytics', icon: BarChart3 }
 ];
 

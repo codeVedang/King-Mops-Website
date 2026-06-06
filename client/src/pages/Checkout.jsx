@@ -1,5 +1,5 @@
-import { CreditCard, Save } from 'lucide-react';
-import { useMemo, useState } from 'react';
+import { CreditCard, Save, ShieldCheck, Smartphone } from 'lucide-react';
+import { useEffect, useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { OrderSummary } from '../components/OrderSummary.jsx';
 import { useAuth } from '../context/AuthContext.jsx';
@@ -20,7 +20,7 @@ const initialAddress = {
 
 export const Checkout = () => {
   const { items, clearCart } = useCart();
-  const { profile, refreshProfile } = useAuth();
+  const { profile, refreshProfile, sendPhoneOtp, verifyPhoneOtp, login, phoneVerification } = useAuth();
   const navigate = useNavigate();
   const [address, setAddress] = useState({
     ...initialAddress,
@@ -30,6 +30,11 @@ export const Checkout = () => {
   const [saveAddress, setSaveAddress] = useState(true);
   const [coupon, setCoupon] = useState('');
   const [error, setError] = useState('');
+  const [message, setMessage] = useState('');
+  const [otp, setOtp] = useState('');
+  const [otpSending, setOtpSending] = useState(false);
+  const [otpChecking, setOtpChecking] = useState(false);
+  const [verifiedPhone, setVerifiedPhone] = useState('');
   const [paying, setPaying] = useState(false);
 
   const cartPayload = useMemo(
@@ -39,13 +44,62 @@ export const Checkout = () => {
 
   const update = (event) => setAddress({ ...address, [event.target.name]: event.target.value });
 
+  useEffect(() => {
+    if (verifiedPhone && verifiedPhone !== address.phone) {
+      setVerifiedPhone('');
+      setOtp('');
+      setMessage('');
+    }
+  }, [address.phone, verifiedPhone]);
+
   const validate = () => {
     const required = ['fullName', 'phone', 'flat', 'street', 'area', 'city', 'state', 'pinCode'];
     if (items.length === 0) return 'Your cart is empty.';
     if (required.some((field) => !address[field]?.trim())) return 'Complete the delivery address.';
     if (!validatePhone(address.phone)) return 'Enter a valid 10-digit Indian mobile number.';
+    if (!verifiedPhone || verifiedPhone !== address.phone) {
+      return 'Verify your mobile number with OTP before payment.';
+    }
     if (!/^\d{6}$/.test(address.pinCode)) return 'Enter a valid 6-digit PIN code.';
     return '';
+  };
+
+  const sendCheckoutOtp = async () => {
+    setError('');
+    setMessage('');
+    if (!validatePhone(address.phone)) {
+      setError('Enter a valid 10-digit Indian mobile number.');
+      return;
+    }
+    setOtpSending(true);
+    try {
+      await sendPhoneOtp(address.phone);
+      setMessage('OTP sent. Enter it below before payment.');
+    } catch (err) {
+      setError(err.message);
+    } finally {
+      setOtpSending(false);
+    }
+  };
+
+  const verifyCheckoutOtp = async () => {
+    setError('');
+    setMessage('');
+    if (!address.fullName.trim()) {
+      setError('Enter your full name before OTP verification.');
+      return;
+    }
+    setOtpChecking(true);
+    try {
+      await verifyPhoneOtp(otp);
+      await login({ phone: address.phone, name: address.fullName });
+      setVerifiedPhone(address.phone);
+      setMessage('Mobile number verified for this order.');
+    } catch (err) {
+      setError(err.message);
+    } finally {
+      setOtpChecking(false);
+    }
   };
 
   const verifyAndCreateOrder = async (payment, orderId) => {
@@ -121,6 +175,7 @@ export const Checkout = () => {
           <h1>Delivery and payment</h1>
         </div>
         <form className="form-grid address-form">
+          <div id="phone-recaptcha-container" className="recaptcha-container" />
           <label>
             Full Name
             <input name="fullName" value={address.fullName} onChange={update} required />
@@ -129,6 +184,29 @@ export const Checkout = () => {
             Phone Number
             <input name="phone" value={address.phone} onChange={update} pattern="[6-9][0-9]{9}" required />
           </label>
+          <div className="otp-row checkout-otp-row full-span">
+            <button type="button" className="secondary-button" onClick={sendCheckoutOtp} disabled={otpSending}>
+              <Smartphone size={18} />
+              {otpSending ? 'Sending...' : 'Send OTP'}
+            </button>
+            <input
+              value={otp}
+              onChange={(event) => setOtp(event.target.value)}
+              placeholder="Enter OTP"
+              inputMode="numeric"
+              autoComplete="one-time-code"
+            />
+            <button type="button" className="secondary-button" onClick={verifyCheckoutOtp} disabled={otpChecking}>
+              <ShieldCheck size={18} />
+              {otpChecking ? 'Checking...' : 'Verify OTP'}
+            </button>
+          </div>
+          {verifiedPhone && verifiedPhone === address.phone && (
+            <p className="form-success full-span">Mobile number verified for payment.</p>
+          )}
+          {phoneVerification?.phone === address.phone && !phoneVerification.verified && (
+            <p className="form-success full-span">OTP sent to {address.phone}.</p>
+          )}
           <label>
             Flat / House No.
             <input name="flat" value={address.flat} onChange={update} required />
@@ -167,12 +245,18 @@ export const Checkout = () => {
           </label>
         </form>
         {error && <p className="form-error">{error}</p>}
+        {message && <p className="form-success">{message}</p>}
       </div>
       <OrderSummary
         action={
-          <button type="button" className="primary-button full-width" onClick={pay} disabled={paying}>
+          <button
+            type="button"
+            className="primary-button full-width"
+            onClick={pay}
+            disabled={paying || !verifiedPhone || verifiedPhone !== address.phone}
+          >
             {paying ? <Save size={18} /> : <CreditCard size={18} />}
-            {paying ? 'Processing...' : 'Pay with Razorpay'}
+            {paying ? 'Processing...' : verifiedPhone && verifiedPhone === address.phone ? 'Pay with Razorpay' : 'Verify Mobile First'}
           </button>
         }
       />

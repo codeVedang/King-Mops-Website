@@ -1376,6 +1376,26 @@ img {
   background: #eaf8ee;
 }
 
+.primary-button:disabled,
+.secondary-button:disabled,
+.text-button:disabled {
+  cursor: not-allowed;
+  opacity: 0.62;
+  transform: none;
+  box-shadow: none;
+}
+
+.checkout-otp-row {
+  padding: 12px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: #ffffff;
+}
+
+.settings-panel {
+  max-width: 760px;
+}
+
 .confirmation-page {
   text-align: center;
   display: grid;
@@ -1690,6 +1710,22 @@ img {
   font-size: 18px;
 }
 
+.detail-list {
+  display: grid;
+  grid-template-columns: 150px minmax(0, 1fr);
+  gap: 10px 14px;
+  align-items: start;
+}
+
+.detail-list span {
+  color: var(--muted);
+  font-weight: 800;
+}
+
+.detail-list strong {
+  word-break: break-word;
+}
+
 @media (max-width: 1020px) {
   .site-header {
     grid-template-columns: auto auto;
@@ -1992,8 +2028,8 @@ img {
   align-items: center;
   padding: 110px clamp(18px, 5vw, 78px) 96px;
   background:
-    linear-gradient(90deg, rgba(27, 15, 7, 0.9) 0%, rgba(88, 41, 10, 0.72) 42%, rgba(27, 15, 7, 0.08) 100%),
-    url("https://images.unsplash.com/photo-1581578731548-c64695cc6952?auto=format&fit=crop&w=2200&q=86");
+    linear-gradient(90deg, rgba(255, 255, 255, 0.94) 0%, rgba(255, 255, 255, 0.82) 34%, rgba(255, 255, 255, 0.1) 74%),
+    url("/images/king-mops-home-hero.png");
   background-size: cover;
   background-position: center;
 }
@@ -2004,13 +2040,18 @@ img {
 
 .app-shell .home-hero-copy h1 {
   max-width: 850px;
+  color: #9a6817;
   font-size: clamp(56px, 9vw, 118px);
   text-wrap: balance;
 }
 
+.app-shell .home-hero-copy .eyebrow {
+  color: #8f2d10;
+}
+
 .app-shell .home-hero-copy p:not(.eyebrow) {
   max-width: 690px;
-  color: rgba(255, 247, 237, 0.92);
+  color: #5f5145;
   font-size: clamp(17px, 2vw, 23px);
 }
 
@@ -2018,9 +2059,16 @@ img {
   display: inline-flex;
   align-items: center;
   gap: 7px;
-  border-color: rgba(255, 255, 255, 0.28);
-  background: rgba(255, 255, 255, 0.13);
+  border-color: rgba(249, 115, 22, 0.22);
+  background: rgba(255, 255, 255, 0.82);
+  color: #5d3512;
   backdrop-filter: blur(12px);
+}
+
+.app-shell .home-hero .glass-button {
+  border-color: #f2d8b9;
+  background: rgba(255, 255, 255, 0.78);
+  color: #5d3512;
 }
 
 .app-shell .premium-console {
@@ -2036,7 +2084,11 @@ img {
 .app-shell .home-search-panel {
   min-height: 60px;
   border-color: #eedbc7;
-  background: #fffaf4;
+  background: #ffffff;
+}
+
+.app-shell .home-search-panel input {
+  background: #ffffff;
 }
 
 .app-shell .home-search-panel button {
@@ -2457,7 +2509,7 @@ img {
 .app-shell .contact-form input,
 .app-shell .contact-form textarea {
   border-color: #eedbc7;
-  background: #fffaf4;
+  background: #ffffff;
 }
 
 .app-shell .result-count {
@@ -2818,6 +2870,14 @@ img {
 
   .app-shell .product-card-body {
     min-height: auto;
+  }
+
+  .checkout-otp-row {
+    grid-template-columns: 1fr;
+  }
+
+  .detail-list {
+    grid-template-columns: 1fr;
   }
 
   .modal-backdrop {

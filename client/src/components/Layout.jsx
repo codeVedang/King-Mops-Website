@@ -60,11 +60,7 @@ export const Layout = () => {
                 <LogOut size={18} />
               </button>
             </div>
-          ) : (
-            <Link className="text-button" to="/login">
-              Signup
-            </Link>
-          )}
+          ) : null}
           <button
             type="button"
             className="icon-button menu-toggle"

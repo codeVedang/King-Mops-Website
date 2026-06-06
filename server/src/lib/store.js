@@ -1,9 +1,17 @@
 import { db, isFirebaseEnabled } from './firebaseAdmin.js';
 import { demoOrders, demoProducts, demoUsers } from '../data/demoData.js';
-import { formatOrderAmounts, toPaise } from './pricing.js';
+import {
+  defaultCheckoutSettings,
+  formatOrderAmounts,
+  normalizeCheckoutSettings,
+  toPaise
+} from './pricing.js';
 import { env } from '../config/env.js';
 
 const nowIso = () => new Date().toISOString();
+const demoSettings = {
+  checkout: normalizeCheckoutSettings(defaultCheckoutSettings)
+};
 
 const timestampToIso = (value) => {
   if (!value) return null;
@@ -189,6 +197,44 @@ export const deleteProduct = async (id) => {
   return publicProduct(product);
 };
 
+export const getCheckoutSettings = async () => {
+  if (isFirebaseEnabled) {
+    const doc = await db.collection('settings').doc('checkout').get();
+    return normalizeCheckoutSettings(doc.exists ? doc.data() : defaultCheckoutSettings);
+  }
+
+  return normalizeCheckoutSettings(demoSettings.checkout);
+};
+
+export const updateCheckoutSettings = async (payload = {}) => {
+  const current = await getCheckoutSettings();
+  const deliveryFeePaise =
+    payload.deliveryFeePaise !== undefined
+      ? payload.deliveryFeePaise
+      : payload.deliveryFee !== undefined
+        ? toPaise(payload.deliveryFee)
+        : current.deliveryFeePaise;
+  const settings = normalizeCheckoutSettings({
+    gstRatePercent: payload.gstRatePercent ?? current.gstRatePercent,
+    deliveryFeePaise
+  });
+  const record = {
+    ...settings,
+    updatedAt: new Date()
+  };
+
+  if (isFirebaseEnabled) {
+    await db.collection('settings').doc('checkout').set(record, { merge: true });
+    return getCheckoutSettings();
+  }
+
+  demoSettings.checkout = {
+    ...settings,
+    updatedAt: nowIso()
+  };
+  return normalizeCheckoutSettings(demoSettings.checkout);
+};
+
 export const getUserProfile = async (uid) => {
   if (isFirebaseEnabled) {
     const doc = await db.collection('users').doc(uid).get();
@@ -302,9 +348,10 @@ export const calculateCart = async (cartItems) => {
     });
   }
 
+  const settings = await getCheckoutSettings();
   return {
     items,
-    ...formatOrderAmounts(items)
+    ...formatOrderAmounts(items, settings)
   };
 };
 

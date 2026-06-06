@@ -11,6 +11,7 @@ import { AdminDashboard } from './pages/AdminDashboard.jsx';
 import { AdminLogin } from './pages/AdminLogin.jsx';
 import { AdminOrderDetail, AdminOrders } from './pages/AdminOrders.jsx';
 import { AdminProducts } from './pages/AdminProducts.jsx';
+import { AdminSettings } from './pages/AdminSettings.jsx';
 import { Cart } from './pages/Cart.jsx';
 import { Checkout } from './pages/Checkout.jsx';
 import { About } from './pages/About.jsx';
@@ -31,12 +32,12 @@ export const App = () => (
             <Route path="shop" element={<Shop />} />
             <Route path="products/:id" element={<ProductDetail />} />
             <Route path="cart" element={<Cart />} />
+            <Route path="checkout" element={<Checkout />} />
             <Route path="login" element={<Login />} />
             <Route path="about" element={<About />} />
             <Route path="contact" element={<Contact />} />
 
             <Route element={<ProtectedRoute />}>
-              <Route path="checkout" element={<Checkout />} />
               <Route path="order-confirmation/:id" element={<OrderConfirmation />} />
               <Route path="account" element={<Account />} />
               <Route path="account/orders/:id" element={<AccountOrderDetail />} />
@@ -55,6 +56,7 @@ export const App = () => (
               <Route path="products" element={<AdminProducts />} />
               <Route path="customers" element={<AdminCustomers />} />
               <Route path="customers/:uid" element={<AdminCustomerDetail />} />
+              <Route path="settings" element={<AdminSettings />} />
             </Route>
           </Route>
         </Routes>

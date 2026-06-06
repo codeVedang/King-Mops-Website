@@ -166,12 +166,30 @@ export const AdminOrderDetail = () => {
       <div className="order-detail-grid">
         <section className="admin-panel">
           <h2>Customer and Payment</h2>
-          <p>{order.customerName}</p>
-          <p>{order.phone}</p>
-          <p>{compactAddress(order.address)}</p>
-          <p>{order.paymentMethod}</p>
-          <p>{order.paymentStatus}</p>
-          <p>{order.razorpayPaymentId}</p>
+          <div className="detail-list">
+            <span>Name</span>
+            <strong>{order.customerName}</strong>
+            <span>Mobile</span>
+            <strong>{order.phone}</strong>
+            <span>Flat / House No.</span>
+            <strong>{order.address?.flat || '-'}</strong>
+            <span>Street</span>
+            <strong>{order.address?.street || '-'}</strong>
+            <span>Area</span>
+            <strong>{order.address?.area || '-'}</strong>
+            <span>City</span>
+            <strong>{order.address?.city || '-'}</strong>
+            <span>State</span>
+            <strong>{order.address?.state || '-'}</strong>
+            <span>PIN Code</span>
+            <strong>{order.address?.pinCode || '-'}</strong>
+            <span>Payment Method</span>
+            <strong>{order.paymentMethod}</strong>
+            <span>Payment Status</span>
+            <strong>{order.paymentStatus}</strong>
+            <span>Razorpay Payment ID</span>
+            <strong>{order.razorpayPaymentId || '-'}</strong>
+          </div>
         </section>
         <section className="admin-panel">
           <h2>Products Ordered</h2>

@@ -86,7 +86,7 @@ export const Login = () => {
     <section className="auth-page">
       <div className="auth-panel single-auth-panel">
         <p className="eyebrow">Mobile Access</p>
-        <h1>{step === 'name' ? 'Complete signup' : 'Continue with mobile'}</h1>
+        <h1>{step === 'name' ? 'Complete profile' : 'Continue with mobile'}</h1>
         <p className="auth-helper">
           {step === 'phone'
             ? 'Enter your mobile number. Existing customers will login automatically after OTP.'
@@ -165,7 +165,7 @@ export const Login = () => {
             {message && <p className="form-success">{message}</p>}
             <button type="submit" className="primary-button full-width" disabled={submitting}>
               <UserRound size={18} />
-              {submitting ? 'Saving...' : 'Complete Signup'}
+              {submitting ? 'Saving...' : 'Complete Profile'}
             </button>
           </form>
         )}

@@ -1,7 +1,12 @@
 import { createContext, useContext, useEffect, useMemo, useState } from 'react';
+import { apiFetch } from '../lib/api.js';
 
 const CartContext = createContext(null);
 const storageKey = 'kingmops:cart';
+const defaultCheckoutSettings = {
+  gstRatePercent: 18,
+  deliveryFeePaise: 4900
+};
 
 const readInitialCart = () => {
   const raw = localStorage.getItem(storageKey);
@@ -10,10 +15,17 @@ const readInitialCart = () => {
 
 export const CartProvider = ({ children }) => {
   const [items, setItems] = useState(readInitialCart);
+  const [checkoutSettings, setCheckoutSettings] = useState(defaultCheckoutSettings);
 
   useEffect(() => {
     localStorage.setItem(storageKey, JSON.stringify(items));
   }, [items]);
+
+  useEffect(() => {
+    apiFetch('/settings/checkout')
+      .then((data) => setCheckoutSettings(data.settings || defaultCheckoutSettings))
+      .catch(() => setCheckoutSettings(defaultCheckoutSettings));
+  }, []);
 
   const addItem = (product, quantity = 1) => {
     setItems((current) => {
@@ -54,16 +66,17 @@ export const CartProvider = ({ children }) => {
       (total, item) => total + Number(item.pricePaise || 0) * Number(item.quantity),
       0
     );
-    const gstPaise = Math.round(subtotalPaise * 0.18);
-    const deliveryPaise = subtotalPaise >= 99900 || subtotalPaise === 0 ? 0 : 4900;
+    const gstPaise = Math.round(subtotalPaise * (Number(checkoutSettings.gstRatePercent || 0) / 100));
+    const deliveryPaise = subtotalPaise === 0 ? 0 : Math.max(0, Number(checkoutSettings.deliveryFeePaise || 0));
     return {
       subtotalPaise,
       gstPaise,
       deliveryPaise,
       totalPaise: subtotalPaise + gstPaise + deliveryPaise,
-      count: items.reduce((total, item) => total + Number(item.quantity), 0)
+      count: items.reduce((total, item) => total + Number(item.quantity), 0),
+      settings: checkoutSettings
     };
-  }, [items]);
+  }, [items, checkoutSettings]);
 
   const value = useMemo(
     () => ({
@@ -72,9 +85,15 @@ export const CartProvider = ({ children }) => {
       addItem,
       setQuantity,
       removeItem,
-      clearCart
+      clearCart,
+      checkoutSettings,
+      refreshCheckoutSettings: () =>
+        apiFetch('/settings/checkout').then((data) => {
+          setCheckoutSettings(data.settings || defaultCheckoutSettings);
+          return data.settings;
+        })
     }),
-    [items, summary]
+    [items, summary, checkoutSettings]
   );
 
   return <CartContext.Provider value={value}>{children}</CartContext.Provider>;

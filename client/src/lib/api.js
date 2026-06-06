@@ -59,6 +59,11 @@ export const apiFetch = async (path, options = {}) => {
   const payload = contentType.includes('application/json') ? await response.json() : null;
 
   if (!response.ok) {
+    if (response.status === 401 && shouldUseAdminToken) {
+      localStorage.removeItem('kingmops:adminToken');
+      localStorage.removeItem('kingmops:adminUser');
+      throw new Error('Admin session expired. Please login again.');
+    }
     throw new Error(payload?.message || 'Request failed.');
   }
 

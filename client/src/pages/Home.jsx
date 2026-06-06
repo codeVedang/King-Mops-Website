@@ -51,7 +51,7 @@ const surfaceItems = [
 
 const trustStats = [
   { value: '3+', label: 'Core categories' },
-  { value: '18%', label: 'GST-ready checkout' },
+  { value: 'Live', label: 'GST-ready checkout' },
   { value: '24/7', label: 'Online ordering' }
 ];
 
