@@ -25,7 +25,7 @@ app.use(
 );
 
 app.post('/api/payments/webhook', express.raw({ type: 'application/json' }), paymentsWebhookHandler);
-app.use(express.json({ limit: '1mb' }));
+app.use(express.json({ limit: '4mb' }));
 
 app.get('/api/health', (req, res) => {
   res.json({

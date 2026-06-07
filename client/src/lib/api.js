@@ -25,7 +25,11 @@ export const apiFetch = async (path, options = {}) => {
   }
 
   const adminToken = localStorage.getItem('kingmops:adminToken');
-  const shouldUseAdminToken = adminToken && (path.startsWith('/admin') || path === '/auth/me');
+  const isAdminPath = path.startsWith('/admin');
+  if (isAdminPath && !adminToken) {
+    throw new Error('Admin session missing. Please login again.');
+  }
+  const shouldUseAdminToken = adminToken && (isAdminPath || path === '/auth/me');
 
   if (options.authToken) {
     headers.set('Authorization', `Bearer ${options.authToken}`);
@@ -48,12 +52,17 @@ export const apiFetch = async (path, options = {}) => {
     headers.set('x-demo-user', demoUser || 'demo-customer');
   }
 
-  const response = await fetch(`${API_BASE_URL}${path}`, {
-    ...Object.fromEntries(
-      Object.entries(options).filter(([key]) => key !== 'authToken')
-    ),
-    headers
-  });
+  let response;
+  try {
+    response = await fetch(`${API_BASE_URL}${path}`, {
+      ...Object.fromEntries(
+        Object.entries(options).filter(([key]) => key !== 'authToken')
+      ),
+      headers
+    });
+  } catch {
+    throw new Error('API request failed. Check Vercel env VITE_API_BASE_URL and redeploy.');
+  }
 
   const contentType = response.headers.get('content-type') || '';
   const payload = contentType.includes('application/json') ? await response.json() : null;
@@ -63,6 +72,9 @@ export const apiFetch = async (path, options = {}) => {
       localStorage.removeItem('kingmops:adminToken');
       localStorage.removeItem('kingmops:adminUser');
       throw new Error('Admin session expired. Please login again.');
+    }
+    if (response.status === 404 && isAdminPath) {
+      throw new Error('Admin API route not found. Redeploy the latest GitHub code on Vercel.');
     }
     throw new Error(payload?.message || 'Request failed.');
   }
