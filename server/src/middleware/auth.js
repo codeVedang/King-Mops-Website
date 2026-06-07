@@ -4,7 +4,8 @@ import { verifyAdminToken } from '../lib/adminSession.js';
 
 export const requireAuth = async (req, res, next) => {
   try {
-    const adminToken = req.header('x-admin-token');
+    const bearerToken = req.header('authorization')?.replace(/^Bearer\s+/i, '');
+    const adminToken = req.header('x-admin-token') || bearerToken;
     if (adminToken) {
       const adminUser = verifyAdminToken(adminToken);
       if (adminUser) {
@@ -14,7 +15,7 @@ export const requireAuth = async (req, res, next) => {
     }
 
     if (!isFirebaseEnabled) {
-      const token = req.header('authorization')?.replace(/^Bearer\s+/i, '');
+      const token = bearerToken;
       if (token) {
         const [, payload] = token.split('.');
         const decoded = payload ? JSON.parse(Buffer.from(payload, 'base64url').toString('utf8')) : {};
@@ -35,7 +36,7 @@ export const requireAuth = async (req, res, next) => {
       return next();
     }
 
-    const token = req.header('authorization')?.replace(/^Bearer\s+/i, '');
+    const token = bearerToken;
     if (!token) {
       return res.status(401).json({ message: 'Authentication token is required.' });
     }
