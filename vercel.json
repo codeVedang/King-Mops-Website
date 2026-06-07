@@ -14,6 +14,18 @@
     "api/admin/[...path].js": {
       "maxDuration": 30
     },
+    "api/admin/customers/[...path].js": {
+      "maxDuration": 30
+    },
+    "api/admin/orders/[...path].js": {
+      "maxDuration": 30
+    },
+    "api/admin/products/[...path].js": {
+      "maxDuration": 30
+    },
+    "api/admin/settings/[...path].js": {
+      "maxDuration": 30
+    },
     "api/orders/[...path].js": {
       "maxDuration": 30
     },
@@ -21,6 +33,9 @@
       "maxDuration": 30
     },
     "api/products/[...path].js": {
+      "maxDuration": 30
+    },
+    "api/settings/[...path].js": {
       "maxDuration": 30
     }
   },
