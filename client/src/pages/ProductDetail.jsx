@@ -34,7 +34,9 @@ export const ProductDetail = () => {
     <section className="page-wrap product-detail-page">
       <div className="product-detail">
         <div className="product-gallery">
-          <img className="main-product-image" src={activeImage} alt={product.name} />
+          <div className="main-product-frame">
+            <img className="main-product-image" src={activeImage} alt={product.name} />
+          </div>
           <div className="thumb-row">
             {product.images?.map((image) => (
               <button key={image} type="button" onClick={() => setActiveImage(image)}>

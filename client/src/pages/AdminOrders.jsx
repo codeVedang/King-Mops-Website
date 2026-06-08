@@ -129,6 +129,9 @@ export const AdminOrderDetail = () => {
   const [status, setStatus] = useState('');
   const [invoiceBusy, setInvoiceBusy] = useState(false);
   const [invoiceError, setInvoiceError] = useState('');
+  const [statusSaving, setStatusSaving] = useState(false);
+  const [statusMessage, setStatusMessage] = useState('');
+  const [statusError, setStatusError] = useState('');
 
   useEffect(() => {
     apiFetch(`/admin/orders/${id}`).then((data) => {
@@ -138,11 +141,22 @@ export const AdminOrderDetail = () => {
   }, [id]);
 
   const saveStatus = async () => {
-    const data = await apiFetch(`/admin/orders/${id}/status`, {
-      method: 'PATCH',
-      body: JSON.stringify({ orderStatus: status })
-    });
-    setOrder(data.order);
+    setStatusError('');
+    setStatusMessage('');
+    setStatusSaving(true);
+    try {
+      const data = await apiFetch(`/admin/orders/${id}/status`, {
+        method: 'PATCH',
+        body: JSON.stringify({ orderStatus: status })
+      });
+      setOrder(data.order);
+      setStatus(data.order.orderStatus);
+      setStatusMessage(`Order status updated to ${data.order.orderStatus}.`);
+    } catch (err) {
+      setStatusError(err.message || 'Unable to update order status.');
+    } finally {
+      setStatusSaving(false);
+    }
   };
 
   const downloadInvoice = async () => {
@@ -177,13 +191,15 @@ export const AdminOrderDetail = () => {
                 <option key={item}>{item}</option>
               ))}
             </select>
-            <button className="primary-button" type="button" onClick={saveStatus}>
-              Update Status
+            <button className="primary-button" type="button" onClick={saveStatus} disabled={statusSaving}>
+              {statusSaving ? 'Updating...' : 'Update Status'}
             </button>
           </div>
         </div>
       </div>
       {invoiceError && <p className="form-error">{invoiceError}</p>}
+      {statusError && <p className="form-error">{statusError}</p>}
+      {statusMessage && <p className="form-success">{statusMessage}</p>}
 
       <div className="order-detail-grid">
         <section className="admin-panel">
