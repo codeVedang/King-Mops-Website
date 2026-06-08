@@ -3,6 +3,7 @@ import { useEffect, useMemo, useState } from 'react';
 import { Link, useParams } from 'react-router-dom';
 import { apiFetch } from '../lib/api.js';
 import { compactAddress, csvEscape, formatDate, formatINR, orderStatuses } from '../lib/format.js';
+import { downloadInvoicePdf } from '../lib/invoice.js';
 
 export const AdminOrders = () => {
   const [orders, setOrders] = useState([]);
@@ -126,6 +127,8 @@ export const AdminOrderDetail = () => {
   const { id } = useParams();
   const [order, setOrder] = useState(null);
   const [status, setStatus] = useState('');
+  const [invoiceBusy, setInvoiceBusy] = useState(false);
+  const [invoiceError, setInvoiceError] = useState('');
 
   useEffect(() => {
     apiFetch(`/admin/orders/${id}`).then((data) => {
@@ -142,6 +145,18 @@ export const AdminOrderDetail = () => {
     setOrder(data.order);
   };
 
+  const downloadInvoice = async () => {
+    setInvoiceError('');
+    setInvoiceBusy(true);
+    try {
+      await downloadInvoicePdf(order);
+    } catch (err) {
+      setInvoiceError(err.message || 'Unable to download invoice.');
+    } finally {
+      setInvoiceBusy(false);
+    }
+  };
+
   if (!order) return <div className="page-loading">Loading order...</div>;
 
   return (
@@ -151,17 +166,24 @@ export const AdminOrderDetail = () => {
           <p className="eyebrow">Order Detail</p>
           <h1>{order.id}</h1>
         </div>
-        <div className="status-editor">
-          <select value={status} onChange={(event) => setStatus(event.target.value)}>
-            {orderStatuses.map((item) => (
-              <option key={item}>{item}</option>
-            ))}
-          </select>
-          <button className="primary-button" type="button" onClick={saveStatus}>
-            Update Status
+        <div className="admin-detail-actions">
+          <button className="secondary-button" type="button" onClick={downloadInvoice} disabled={invoiceBusy}>
+            <Download size={18} />
+            {invoiceBusy ? 'Preparing...' : 'Download Invoice'}
           </button>
+          <div className="status-editor">
+            <select value={status} onChange={(event) => setStatus(event.target.value)}>
+              {orderStatuses.map((item) => (
+                <option key={item}>{item}</option>
+              ))}
+            </select>
+            <button className="primary-button" type="button" onClick={saveStatus}>
+              Update Status
+            </button>
+          </div>
         </div>
       </div>
+      {invoiceError && <p className="form-error">{invoiceError}</p>}
 
       <div className="order-detail-grid">
         <section className="admin-panel">

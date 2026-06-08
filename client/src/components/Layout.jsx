@@ -93,6 +93,7 @@ export const Layout = () => {
           <Link to="/shop">Shop</Link>
           <Link to="/about">About</Link>
           <Link to="/contact">Contact</Link>
+          <Link to="/terms">Terms and Conditions</Link>
         </div>
         <div className="footer-links">
           <strong>Contact</strong>

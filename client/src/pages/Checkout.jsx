@@ -1,6 +1,6 @@
 import { CreditCard, Save, ShieldCheck, Smartphone } from 'lucide-react';
 import { useEffect, useMemo, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { OrderSummary } from '../components/OrderSummary.jsx';
 import { useAuth } from '../context/AuthContext.jsx';
 import { useCart } from '../context/CartContext.jsx';
@@ -249,15 +249,22 @@ export const Checkout = () => {
       </div>
       <OrderSummary
         action={
-          <button
-            type="button"
-            className="primary-button full-width"
-            onClick={pay}
-            disabled={paying || !verifiedPhone || verifiedPhone !== address.phone}
-          >
-            {paying ? <Save size={18} /> : <CreditCard size={18} />}
-            {paying ? 'Processing...' : verifiedPhone && verifiedPhone === address.phone ? 'Pay with Razorpay' : 'Verify Mobile First'}
-          </button>
+          <>
+            <p className="checkout-terms-note">
+              By placing this order, you accept our{' '}
+              <Link to="/terms" target="_blank" rel="noreferrer">Terms and Conditions</Link>,
+              including the no return and no refund policy.
+            </p>
+            <button
+              type="button"
+              className="primary-button full-width"
+              onClick={pay}
+              disabled={paying || !verifiedPhone || verifiedPhone !== address.phone}
+            >
+              {paying ? <Save size={18} /> : <CreditCard size={18} />}
+              {paying ? 'Processing...' : verifiedPhone && verifiedPhone === address.phone ? 'Pay with Razorpay' : 'Verify Mobile First'}
+            </button>
+          </>
         }
       />
     </section>

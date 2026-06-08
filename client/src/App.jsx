@@ -21,6 +21,7 @@ import { Login } from './pages/Login.jsx';
 import { OrderConfirmation } from './pages/OrderConfirmation.jsx';
 import { ProductDetail } from './pages/ProductDetail.jsx';
 import { Shop } from './pages/Shop.jsx';
+import { Terms } from './pages/Terms.jsx';
 
 export const App = () => (
   <BrowserRouter>
@@ -36,6 +37,7 @@ export const App = () => (
             <Route path="login" element={<Login />} />
             <Route path="about" element={<About />} />
             <Route path="contact" element={<Contact />} />
+            <Route path="terms" element={<Terms />} />
 
             <Route element={<ProtectedRoute />}>
               <Route path="order-confirmation/:id" element={<OrderConfirmation />} />
