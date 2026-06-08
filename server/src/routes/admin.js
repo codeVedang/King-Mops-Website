@@ -61,7 +61,7 @@ adminRouter.get('/orders/:id', async (req, res, next) => {
   }
 });
 
-adminRouter.patch('/orders/:id/status', async (req, res, next) => {
+const updateOrderStatusHandler = async (req, res, next) => {
   try {
     const order = await updateOrderStatus(req.params.id, req.body.orderStatus);
     if (!order) return res.status(404).json({ message: 'Order not found.' });
@@ -69,7 +69,10 @@ adminRouter.patch('/orders/:id/status', async (req, res, next) => {
   } catch (error) {
     next(error);
   }
-});
+};
+
+adminRouter.patch('/orders/:id', updateOrderStatusHandler);
+adminRouter.patch('/orders/:id/status', updateOrderStatusHandler);
 
 adminRouter.get('/products', async (req, res, next) => {
   try {

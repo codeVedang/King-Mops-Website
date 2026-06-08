@@ -20,6 +20,9 @@
     "api/admin/orders/[...path].js": {
       "maxDuration": 30
     },
+    "api/admin/orders/[id].js": {
+      "maxDuration": 30
+    },
     "api/admin/orders/[id]/status.js": {
       "maxDuration": 30
     },

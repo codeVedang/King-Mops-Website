@@ -145,7 +145,7 @@ export const AdminOrderDetail = () => {
     setStatusMessage('');
     setStatusSaving(true);
     try {
-      const data = await apiFetch(`/admin/orders/${id}/status`, {
+      const data = await apiFetch(`/admin/orders/${id}`, {
         method: 'PATCH',
         body: JSON.stringify({ orderStatus: status })
       });
