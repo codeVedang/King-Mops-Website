@@ -18,15 +18,16 @@ export const paymentsRouter = express.Router();
 paymentsRouter.post('/create-razorpay-order', requireAuth, async (req, res, next) => {
   try {
     const summary = await calculateCart(req.body.items);
+    const amountPaise = Math.round(Number(summary.totalPaise || 0));
     const receipt = `rcpt_${Date.now()}`;
     const paymentOrder = await createPaymentOrder({
-      amountPaise: summary.totalPaise,
+      amountPaise,
       receipt
     });
 
     res.status(201).json({
       razorpayOrderId: paymentOrder.id,
-      amountPaise: summary.totalPaise,
+      amountPaise,
       currency: 'INR',
       keyId: env.razorpay.keyId,
       summary

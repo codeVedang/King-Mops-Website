@@ -19,7 +19,7 @@ const initialAddress = {
 };
 
 export const Checkout = () => {
-  const { items, clearCart } = useCart();
+  const { items, clearCart, summary } = useCart();
   const { profile, refreshProfile, sendPhoneOtp, verifyPhoneOtp, login, phoneVerification } = useAuth();
   const navigate = useNavigate();
   const [address, setAddress] = useState({
@@ -36,6 +36,7 @@ export const Checkout = () => {
   const [otpChecking, setOtpChecking] = useState(false);
   const [verifiedPhone, setVerifiedPhone] = useState('');
   const [paying, setPaying] = useState(false);
+  const [serverSummary, setServerSummary] = useState(null);
 
   const cartPayload = useMemo(
     () => items.map((item) => ({ productId: item.id, quantity: item.quantity })),
@@ -51,6 +52,10 @@ export const Checkout = () => {
       setMessage('');
     }
   }, [address.phone, verifiedPhone]);
+
+  useEffect(() => {
+    setServerSummary(null);
+  }, [cartPayload]);
 
   const validate = () => {
     const required = ['fullName', 'phone', 'flat', 'street', 'area', 'city', 'state', 'pinCode'];
@@ -133,6 +138,11 @@ export const Checkout = () => {
         method: 'POST',
         body: JSON.stringify({ items: cartPayload, coupon })
       });
+      const payableSummary = orderData.summary || null;
+      const payableAmountPaise = Math.round(
+        Number(payableSummary?.totalPaise ?? orderData.amountPaise ?? summary.totalPaise)
+      );
+      setServerSummary(payableSummary);
 
       if (orderData.razorpayOrderId.startsWith('order_demo_')) {
         await verifyAndCreateOrder({}, orderData.razorpayOrderId);
@@ -142,10 +152,10 @@ export const Checkout = () => {
       await loadRazorpayCheckout();
       const checkout = new window.Razorpay({
         key: orderData.keyId,
-        amount: orderData.amountPaise,
+        amount: payableAmountPaise,
         currency: orderData.currency,
         name: 'King Brand Mops',
-        description: 'Cleaning products order',
+        description: `Order total including GST and delivery`,
         order_id: orderData.razorpayOrderId,
         prefill: {
           name: address.fullName,
@@ -248,6 +258,7 @@ export const Checkout = () => {
         {message && <p className="form-success">{message}</p>}
       </div>
       <OrderSummary
+        summaryOverride={serverSummary}
         action={
           <>
             <p className="checkout-terms-note">

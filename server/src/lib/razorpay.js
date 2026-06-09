@@ -10,10 +10,17 @@ const razorpay = hasRazorpayKeys
   : null;
 
 export const createPaymentOrder = async ({ amountPaise, receipt }) => {
+  const finalAmountPaise = Math.round(Number(amountPaise || 0));
+  if (!Number.isFinite(finalAmountPaise) || finalAmountPaise <= 0) {
+    const error = new Error('Invalid payment amount.');
+    error.status = 400;
+    throw error;
+  }
+
   if (!razorpay) {
     return {
       id: `order_demo_${Date.now()}`,
-      amount: amountPaise,
+      amount: finalAmountPaise,
       currency: 'INR',
       receipt,
       demo: true
@@ -22,7 +29,7 @@ export const createPaymentOrder = async ({ amountPaise, receipt }) => {
 
   try {
     return await razorpay.orders.create({
-      amount: amountPaise,
+      amount: finalAmountPaise,
       currency: 'INR',
       receipt,
       payment_capture: 1
