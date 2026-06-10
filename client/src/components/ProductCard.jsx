@@ -1,11 +1,12 @@
-import { ShoppingCart, Zap } from 'lucide-react';
+import { Minus, Plus, ShoppingCart, Zap } from 'lucide-react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useCart } from '../context/CartContext.jsx';
 import { formatINR } from '../lib/format.js';
 
 export const ProductCard = ({ product }) => {
-  const { addItem } = useCart();
+  const { items, addItem, setQuantity, removeItem } = useCart();
   const navigate = useNavigate();
+  const cartItem = items.find((item) => item.id === product.id);
   const discount =
     product.mrpPaise > product.pricePaise
       ? Math.round(((product.mrpPaise - product.pricePaise) / product.mrpPaise) * 100)
@@ -14,6 +15,15 @@ export const ProductCard = ({ product }) => {
   const buyNow = () => {
     addItem(product);
     navigate('/checkout');
+  };
+
+  const decreaseQuantity = () => {
+    if (!cartItem) return;
+    if (cartItem.quantity <= 1) {
+      removeItem(product.id);
+      return;
+    }
+    setQuantity(product.id, cartItem.quantity - 1);
   };
 
   return (
@@ -43,10 +53,22 @@ export const ProductCard = ({ product }) => {
           <span>Quality pick</span>
         </div>
         <div className="product-card-actions">
-          <button type="button" className="primary-button" onClick={() => addItem(product)}>
-            <ShoppingCart size={18} />
-            Add to Cart
-          </button>
+          {cartItem ? (
+            <div className="product-card-quantity" aria-label={`${product.name} cart quantity`}>
+              <button type="button" onClick={decreaseQuantity} aria-label="Decrease quantity">
+                <Minus size={16} />
+              </button>
+              <span>{cartItem.quantity}</span>
+              <button type="button" onClick={() => addItem(product)} aria-label="Increase quantity">
+                <Plus size={16} />
+              </button>
+            </div>
+          ) : (
+            <button type="button" className="primary-button" onClick={() => addItem(product)}>
+              <ShoppingCart size={18} />
+              Add to Cart
+            </button>
+          )}
           <button type="button" className="secondary-button" onClick={buyNow}>
             <Zap size={18} />
             Buy Now
