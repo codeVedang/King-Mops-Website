@@ -1,4 +1,4 @@
-import { createContext, useContext, useEffect, useMemo, useState } from 'react';
+import { createContext, useCallback, useContext, useEffect, useMemo, useRef, useState } from 'react';
 import { apiFetch } from '../lib/api.js';
 
 const CartContext = createContext(null);
@@ -16,10 +16,25 @@ const readInitialCart = () => {
 export const CartProvider = ({ children }) => {
   const [items, setItems] = useState(readInitialCart);
   const [checkoutSettings, setCheckoutSettings] = useState(defaultCheckoutSettings);
+  const [toast, setToast] = useState(null);
+  const toastTimer = useRef(null);
+
+  const showToast = useCallback((message, detail = '') => {
+    if (toastTimer.current) window.clearTimeout(toastTimer.current);
+    setToast({ id: Date.now(), message, detail });
+    toastTimer.current = window.setTimeout(() => setToast(null), 2400);
+  }, []);
 
   useEffect(() => {
     localStorage.setItem(storageKey, JSON.stringify(items));
   }, [items]);
+
+  useEffect(
+    () => () => {
+      if (toastTimer.current) window.clearTimeout(toastTimer.current);
+    },
+    []
+  );
 
   useEffect(() => {
     apiFetch('/settings/checkout')
@@ -27,7 +42,7 @@ export const CartProvider = ({ children }) => {
       .catch(() => setCheckoutSettings(defaultCheckoutSettings));
   }, []);
 
-  const addItem = (product, quantity = 1) => {
+  const addItem = useCallback((product, quantity = 1) => {
     setItems((current) => {
       const existing = current.find((item) => item.id === product.id);
       if (existing) {
@@ -48,18 +63,32 @@ export const CartProvider = ({ children }) => {
         }
       ];
     });
-  };
+    showToast('Added to cart', `${product.name} x ${quantity}`);
+  }, [showToast]);
 
-  const setQuantity = (id, quantity) => {
-    setItems((current) =>
-      current
-        .map((item) => (item.id === id ? { ...item, quantity: Math.max(1, Number(quantity)) } : item))
-        .filter((item) => item.quantity > 0)
-    );
-  };
+  const setQuantity = useCallback((id, quantity) => {
+    setItems((current) => {
+      const existing = current.find((item) => item.id === id);
+      const nextQuantity = Math.max(0, Number(quantity));
+      if (!existing) return current;
+      if (nextQuantity <= 0) {
+        showToast('Removed from cart', existing.name);
+        return current.filter((item) => item.id !== id);
+      }
+      showToast('Cart updated', `${existing.name} x ${nextQuantity}`);
+      return current.map((item) => (item.id === id ? { ...item, quantity: nextQuantity } : item));
+    });
+  }, [showToast]);
 
-  const removeItem = (id) => setItems((current) => current.filter((item) => item.id !== id));
-  const clearCart = () => setItems([]);
+  const removeItem = useCallback((id) => {
+    setItems((current) => {
+      const existing = current.find((item) => item.id === id);
+      if (existing) showToast('Removed from cart', existing.name);
+      return current.filter((item) => item.id !== id);
+    });
+  }, [showToast]);
+
+  const clearCart = useCallback(() => setItems([]), []);
 
   const summary = useMemo(() => {
     const subtotalPaise = items.reduce(
@@ -93,10 +122,20 @@ export const CartProvider = ({ children }) => {
           return data.settings;
         })
     }),
-    [items, summary, checkoutSettings]
+    [items, summary, addItem, setQuantity, removeItem, clearCart, checkoutSettings]
   );
 
-  return <CartContext.Provider value={value}>{children}</CartContext.Provider>;
+  return (
+    <CartContext.Provider value={value}>
+      {children}
+      {toast && (
+        <div className="cart-toast" role="status" aria-live="polite">
+          <strong>{toast.message}</strong>
+          {toast.detail && <span>{toast.detail}</span>}
+        </div>
+      )}
+    </CartContext.Provider>
+  );
 };
 
 export const useCart = () => useContext(CartContext);
