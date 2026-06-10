@@ -1,5 +1,6 @@
 import { BrowserRouter, Navigate, Route, Routes } from 'react-router-dom';
 import { AdminShell } from './components/AdminShell.jsx';
+import { AnalyticsTracker } from './components/AnalyticsTracker.jsx';
 import { Layout } from './components/Layout.jsx';
 import { ProtectedRoute } from './components/ProtectedRoute.jsx';
 import { AuthProvider } from './context/AuthContext.jsx';
@@ -27,6 +28,7 @@ export const App = () => (
   <BrowserRouter>
     <AuthProvider>
       <CartProvider>
+        <AnalyticsTracker />
         <Routes>
           <Route element={<Layout />}>
             <Route index element={<Home />} />

@@ -1,5 +1,6 @@
 import { createContext, useCallback, useContext, useEffect, useMemo, useRef, useState } from 'react';
 import { apiFetch } from '../lib/api.js';
+import { trackAnalyticsEvent } from '../lib/firebase.js';
 
 const CartContext = createContext(null);
 const storageKey = 'kingmops:cart';
@@ -64,6 +65,19 @@ export const CartProvider = ({ children }) => {
       ];
     });
     showToast('Added to cart', `${product.name} x ${quantity}`);
+    trackAnalyticsEvent('add_to_cart', {
+      currency: 'INR',
+      value: Number(product.pricePaise || 0) / 100,
+      items: [
+        {
+          item_id: product.id,
+          item_name: product.name,
+          item_category: product.category,
+          price: Number(product.pricePaise || 0) / 100,
+          quantity
+        }
+      ]
+    });
   }, [showToast]);
 
   const setQuantity = useCallback((id, quantity) => {
@@ -73,9 +87,27 @@ export const CartProvider = ({ children }) => {
       if (!existing) return current;
       if (nextQuantity <= 0) {
         showToast('Removed from cart', existing.name);
+        trackAnalyticsEvent('remove_from_cart', {
+          currency: 'INR',
+          value: Number(existing.pricePaise || 0) / 100,
+          items: [
+            {
+              item_id: existing.id,
+              item_name: existing.name,
+              item_category: existing.category,
+              price: Number(existing.pricePaise || 0) / 100,
+              quantity: existing.quantity
+            }
+          ]
+        });
         return current.filter((item) => item.id !== id);
       }
       showToast('Cart updated', `${existing.name} x ${nextQuantity}`);
+      trackAnalyticsEvent('cart_quantity_update', {
+        item_id: existing.id,
+        item_name: existing.name,
+        quantity: nextQuantity
+      });
       return current.map((item) => (item.id === id ? { ...item, quantity: nextQuantity } : item));
     });
   }, [showToast]);
@@ -83,7 +115,22 @@ export const CartProvider = ({ children }) => {
   const removeItem = useCallback((id) => {
     setItems((current) => {
       const existing = current.find((item) => item.id === id);
-      if (existing) showToast('Removed from cart', existing.name);
+      if (existing) {
+        showToast('Removed from cart', existing.name);
+        trackAnalyticsEvent('remove_from_cart', {
+          currency: 'INR',
+          value: Number(existing.pricePaise || 0) / 100,
+          items: [
+            {
+              item_id: existing.id,
+              item_name: existing.name,
+              item_category: existing.category,
+              price: Number(existing.pricePaise || 0) / 100,
+              quantity: existing.quantity
+            }
+          ]
+        });
+      }
       return current.filter((item) => item.id !== id);
     });
   }, [showToast]);

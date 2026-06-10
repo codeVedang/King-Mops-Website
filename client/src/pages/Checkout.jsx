@@ -5,6 +5,7 @@ import { OrderSummary } from '../components/OrderSummary.jsx';
 import { useAuth } from '../context/AuthContext.jsx';
 import { useCart } from '../context/CartContext.jsx';
 import { apiFetch, loadRazorpayCheckout } from '../lib/api.js';
+import { trackAnalyticsEvent } from '../lib/firebase.js';
 import { validatePhone } from '../lib/format.js';
 
 const initialAddress = {
@@ -119,6 +120,20 @@ export const Checkout = () => {
         saveAddress
       })
     });
+    trackAnalyticsEvent('purchase', {
+      transaction_id: data.order.id,
+      currency: 'INR',
+      value: Number(data.order.totalAmountPaise || 0) / 100,
+      tax: Number(data.order.gstPaise || 0) / 100,
+      shipping: Number(data.order.deliveryPaise || 0) / 100,
+      items: data.order.items.map((item) => ({
+        item_id: item.productId,
+        item_name: item.name,
+        item_category: item.category,
+        price: Number(item.pricePaise || 0) / 100,
+        quantity: item.quantity
+      }))
+    });
     clearCart();
     await refreshProfile();
     navigate(`/order-confirmation/${data.order.id}`, { state: { order: data.order } });
@@ -143,6 +158,17 @@ export const Checkout = () => {
         Number(payableSummary?.totalPaise ?? orderData.amountPaise ?? summary.totalPaise)
       );
       setServerSummary(payableSummary);
+      trackAnalyticsEvent('begin_checkout', {
+        currency: 'INR',
+        value: payableAmountPaise / 100,
+        items: (payableSummary?.items || items).map((item) => ({
+          item_id: item.productId || item.id,
+          item_name: item.name,
+          item_category: item.category,
+          price: Number(item.pricePaise || 0) / 100,
+          quantity: item.quantity
+        }))
+      });
 
       if (orderData.razorpayOrderId.startsWith('order_demo_')) {
         await verifyAndCreateOrder({}, orderData.razorpayOrderId);
