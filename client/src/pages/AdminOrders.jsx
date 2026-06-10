@@ -3,6 +3,7 @@ import { useEffect, useMemo, useState } from 'react';
 import { Link, useParams } from 'react-router-dom';
 import { apiFetch } from '../lib/api.js';
 import { compactAddress, csvEscape, formatDate, formatINR, orderStatuses } from '../lib/format.js';
+import { downloadInvoicePdf } from '../lib/invoice.js';
 
 export const AdminOrders = () => {
   const [orders, setOrders] = useState([]);
@@ -126,6 +127,11 @@ export const AdminOrderDetail = () => {
   const { id } = useParams();
   const [order, setOrder] = useState(null);
   const [status, setStatus] = useState('');
+  const [invoiceBusy, setInvoiceBusy] = useState(false);
+  const [invoiceError, setInvoiceError] = useState('');
+  const [statusSaving, setStatusSaving] = useState(false);
+  const [statusMessage, setStatusMessage] = useState('');
+  const [statusError, setStatusError] = useState('');
 
   useEffect(() => {
     apiFetch(`/admin/orders/${id}`).then((data) => {
@@ -135,11 +141,34 @@ export const AdminOrderDetail = () => {
   }, [id]);
 
   const saveStatus = async () => {
-    const data = await apiFetch(`/admin/orders/${id}/status`, {
-      method: 'PATCH',
-      body: JSON.stringify({ orderStatus: status })
-    });
-    setOrder(data.order);
+    setStatusError('');
+    setStatusMessage('');
+    setStatusSaving(true);
+    try {
+      const data = await apiFetch(`/admin/orders/${id}`, {
+        method: 'PATCH',
+        body: JSON.stringify({ orderStatus: status })
+      });
+      setOrder(data.order);
+      setStatus(data.order.orderStatus);
+      setStatusMessage(`Order status updated to ${data.order.orderStatus}.`);
+    } catch (err) {
+      setStatusError(err.message || 'Unable to update order status.');
+    } finally {
+      setStatusSaving(false);
+    }
+  };
+
+  const downloadInvoice = async () => {
+    setInvoiceError('');
+    setInvoiceBusy(true);
+    try {
+      await downloadInvoicePdf(order);
+    } catch (err) {
+      setInvoiceError(err.message || 'Unable to download invoice.');
+    } finally {
+      setInvoiceBusy(false);
+    }
   };
 
   if (!order) return <div className="page-loading">Loading order...</div>;
@@ -151,17 +180,26 @@ export const AdminOrderDetail = () => {
           <p className="eyebrow">Order Detail</p>
           <h1>{order.id}</h1>
         </div>
-        <div className="status-editor">
-          <select value={status} onChange={(event) => setStatus(event.target.value)}>
-            {orderStatuses.map((item) => (
-              <option key={item}>{item}</option>
-            ))}
-          </select>
-          <button className="primary-button" type="button" onClick={saveStatus}>
-            Update Status
+        <div className="admin-detail-actions">
+          <button className="secondary-button" type="button" onClick={downloadInvoice} disabled={invoiceBusy}>
+            <Download size={18} />
+            {invoiceBusy ? 'Preparing...' : 'Download Invoice'}
           </button>
+          <div className="status-editor">
+            <select value={status} onChange={(event) => setStatus(event.target.value)}>
+              {orderStatuses.map((item) => (
+                <option key={item}>{item}</option>
+              ))}
+            </select>
+            <button className="primary-button" type="button" onClick={saveStatus} disabled={statusSaving}>
+              {statusSaving ? 'Updating...' : 'Update Status'}
+            </button>
+          </div>
         </div>
       </div>
+      {invoiceError && <p className="form-error">{invoiceError}</p>}
+      {statusError && <p className="form-error">{statusError}</p>}
+      {statusMessage && <p className="form-success">{statusMessage}</p>}
 
       <div className="order-detail-grid">
         <section className="admin-panel">

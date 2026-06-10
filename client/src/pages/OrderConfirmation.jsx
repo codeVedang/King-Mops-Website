@@ -1,4 +1,4 @@
-import { ArrowRight, CheckCircle2 } from 'lucide-react';
+import { ArrowRight, CalendarDays, CheckCircle2, MapPin, Phone, ReceiptText, ShoppingBag, Truck } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import { Link, useLocation, useParams } from 'react-router-dom';
 import { apiFetch } from '../lib/api.js';
@@ -19,13 +19,34 @@ export const OrderConfirmation = () => {
 
   return (
     <section className="page-wrap confirmation-page">
-      <CheckCircle2 size={56} />
-      <p className="eyebrow">Order Confirmed</p>
-      <h1>{order.id}</h1>
-      <p>Estimated delivery: {getEstimatedDelivery(order.createdAt)}</p>
-      <div className="order-detail-grid">
-        <div>
-          <h2>Items Ordered</h2>
+      <div className="confirmation-hero">
+        <span className="confirmation-icon">
+          <CheckCircle2 size={44} />
+        </span>
+        <p className="eyebrow">Order Confirmed</p>
+        <h1>{order.id}</h1>
+        <p>
+          Thank you, {order.customerName || 'customer'}. Your payment is confirmed and your
+          order details have been saved.
+        </p>
+        <div className="confirmation-meta">
+          <span>
+            <Truck size={18} />
+            Estimated delivery: {getEstimatedDelivery(order.createdAt)}
+          </span>
+          <span>
+            <CalendarDays size={18} />
+            Paid on {formatDate(order.createdAt)}
+          </span>
+        </div>
+      </div>
+
+      <div className="order-detail-grid confirmation-grid">
+        <div className="confirmation-card">
+          <h2>
+            <ShoppingBag size={22} />
+            Items Ordered
+          </h2>
           {order.items.map((item) => (
             <div className="mini-line" key={item.productId}>
               <span>
@@ -34,19 +55,49 @@ export const OrderConfirmation = () => {
               <strong>{formatINR(item.pricePaise * item.quantity)}</strong>
             </div>
           ))}
+          <div className="mini-line">
+            <span>Subtotal</span>
+            <strong>{formatINR(order.subtotalPaise)}</strong>
+          </div>
+          <div className="mini-line">
+            <span>GST</span>
+            <strong>{formatINR(order.gstPaise)}</strong>
+          </div>
+          <div className="mini-line">
+            <span>Delivery</span>
+            <strong>{order.deliveryPaise ? formatINR(order.deliveryPaise) : 'Free'}</strong>
+          </div>
+          <div className="mini-line total-line">
+            <span>Total Paid</span>
+            <strong>{formatINR(order.totalAmountPaise)}</strong>
+          </div>
         </div>
-        <div>
-          <h2>Delivery Address</h2>
+        <div className="confirmation-card">
+          <h2>
+            <MapPin size={22} />
+            Delivery Address
+          </h2>
           <p>{compactAddress(order.address)}</p>
-          <p>{order.phone}</p>
-          <p>Paid on {formatDate(order.createdAt)}</p>
-          <strong>{formatINR(order.totalAmountPaise)}</strong>
+          <p className="confirmation-contact">
+            <Phone size={18} />
+            {order.phone}
+          </p>
+          <div className="confirmation-receipt">
+            <ReceiptText size={20} />
+            <span>Payment ID</span>
+            <strong>{order.razorpayPaymentId || 'Recorded after payment'}</strong>
+          </div>
         </div>
       </div>
-      <Link className="primary-button" to="/shop">
-        Continue Shopping
-        <ArrowRight size={18} />
-      </Link>
+      <div className="confirmation-actions">
+        <Link className="primary-button" to="/shop">
+          Continue Shopping
+          <ArrowRight size={18} />
+        </Link>
+        <Link className="secondary-button" to="/account">
+          View My Orders
+        </Link>
+      </div>
     </section>
   );
 };

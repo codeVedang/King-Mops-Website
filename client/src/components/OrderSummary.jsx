@@ -2,8 +2,9 @@ import { Link } from 'react-router-dom';
 import { useCart } from '../context/CartContext.jsx';
 import { formatINR } from '../lib/format.js';
 
-export const OrderSummary = ({ action, showCheckoutLink = false }) => {
-  const { summary } = useCart();
+export const OrderSummary = ({ action, showCheckoutLink = false, summaryOverride = null }) => {
+  const { summary: cartSummary } = useCart();
+  const summary = summaryOverride || cartSummary;
 
   return (
     <aside className="summary-panel">

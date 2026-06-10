@@ -1,6 +1,6 @@
 import { CreditCard, Save, ShieldCheck, Smartphone } from 'lucide-react';
 import { useEffect, useMemo, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { OrderSummary } from '../components/OrderSummary.jsx';
 import { useAuth } from '../context/AuthContext.jsx';
 import { useCart } from '../context/CartContext.jsx';
@@ -19,7 +19,7 @@ const initialAddress = {
 };
 
 export const Checkout = () => {
-  const { items, clearCart } = useCart();
+  const { items, clearCart, summary } = useCart();
   const { profile, refreshProfile, sendPhoneOtp, verifyPhoneOtp, login, phoneVerification } = useAuth();
   const navigate = useNavigate();
   const [address, setAddress] = useState({
@@ -36,6 +36,7 @@ export const Checkout = () => {
   const [otpChecking, setOtpChecking] = useState(false);
   const [verifiedPhone, setVerifiedPhone] = useState('');
   const [paying, setPaying] = useState(false);
+  const [serverSummary, setServerSummary] = useState(null);
 
   const cartPayload = useMemo(
     () => items.map((item) => ({ productId: item.id, quantity: item.quantity })),
@@ -51,6 +52,10 @@ export const Checkout = () => {
       setMessage('');
     }
   }, [address.phone, verifiedPhone]);
+
+  useEffect(() => {
+    setServerSummary(null);
+  }, [cartPayload]);
 
   const validate = () => {
     const required = ['fullName', 'phone', 'flat', 'street', 'area', 'city', 'state', 'pinCode'];
@@ -133,6 +138,11 @@ export const Checkout = () => {
         method: 'POST',
         body: JSON.stringify({ items: cartPayload, coupon })
       });
+      const payableSummary = orderData.summary || null;
+      const payableAmountPaise = Math.round(
+        Number(payableSummary?.totalPaise ?? orderData.amountPaise ?? summary.totalPaise)
+      );
+      setServerSummary(payableSummary);
 
       if (orderData.razorpayOrderId.startsWith('order_demo_')) {
         await verifyAndCreateOrder({}, orderData.razorpayOrderId);
@@ -142,10 +152,10 @@ export const Checkout = () => {
       await loadRazorpayCheckout();
       const checkout = new window.Razorpay({
         key: orderData.keyId,
-        amount: orderData.amountPaise,
+        amount: payableAmountPaise,
         currency: orderData.currency,
         name: 'King Brand Mops',
-        description: 'Cleaning products order',
+        description: `Order total including GST and delivery`,
         order_id: orderData.razorpayOrderId,
         prefill: {
           name: address.fullName,
@@ -248,16 +258,24 @@ export const Checkout = () => {
         {message && <p className="form-success">{message}</p>}
       </div>
       <OrderSummary
+        summaryOverride={serverSummary}
         action={
-          <button
-            type="button"
-            className="primary-button full-width"
-            onClick={pay}
-            disabled={paying || !verifiedPhone || verifiedPhone !== address.phone}
-          >
-            {paying ? <Save size={18} /> : <CreditCard size={18} />}
-            {paying ? 'Processing...' : verifiedPhone && verifiedPhone === address.phone ? 'Pay with Razorpay' : 'Verify Mobile First'}
-          </button>
+          <>
+            <p className="checkout-terms-note">
+              By placing this order, you accept our{' '}
+              <Link to="/terms" target="_blank" rel="noreferrer">Terms and Conditions</Link>,
+              including the no return and no refund policy.
+            </p>
+            <button
+              type="button"
+              className="primary-button full-width"
+              onClick={pay}
+              disabled={paying || !verifiedPhone || verifiedPhone !== address.phone}
+            >
+              {paying ? <Save size={18} /> : <CreditCard size={18} />}
+              {paying ? 'Processing...' : verifiedPhone && verifiedPhone === address.phone ? 'Pay with Razorpay' : 'Verify Mobile First'}
+            </button>
+          </>
         }
       />
     </section>
