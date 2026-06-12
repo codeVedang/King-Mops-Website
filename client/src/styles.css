@@ -976,6 +976,37 @@ img {
   gap: 8px;
 }
 
+.product-card-quantity {
+  display: grid;
+  grid-template-columns: 42px minmax(36px, 1fr) 42px;
+  align-items: center;
+  min-height: 46px;
+  overflow: hidden;
+  border: 1px solid var(--teal);
+  border-radius: 8px;
+  background: #fff7ed;
+  color: var(--teal-dark);
+  font-weight: 900;
+}
+
+.product-card-quantity button {
+  display: grid;
+  place-items: center;
+  width: 100%;
+  height: 100%;
+  border: 0;
+  background: transparent;
+  color: inherit;
+}
+
+.product-card-quantity button:hover {
+  background: #ffedd5;
+}
+
+.product-card-quantity span {
+  text-align: center;
+}
+
 .product-card-actions .primary-button,
 .product-card-actions .secondary-button {
   min-width: 0;
@@ -1398,6 +1429,45 @@ img {
 .form-success {
   color: #155b35;
   background: #eaf8ee;
+}
+
+.cart-toast {
+  position: fixed;
+  right: clamp(14px, 4vw, 34px);
+  bottom: clamp(14px, 4vw, 34px);
+  z-index: 1000;
+  min-width: min(320px, calc(100vw - 28px));
+  max-width: min(420px, calc(100vw - 28px));
+  display: grid;
+  gap: 4px;
+  padding: 14px 16px;
+  border: 1px solid #fed7aa;
+  border-radius: 8px;
+  background: #1f1711;
+  color: #ffffff;
+  box-shadow: 0 18px 42px rgba(31, 23, 17, 0.28);
+  animation: cartToastIn 220ms ease both;
+}
+
+.cart-toast strong {
+  font-size: 15px;
+}
+
+.cart-toast span {
+  color: #ffe3c2;
+  font-size: 13px;
+  font-weight: 800;
+}
+
+@keyframes cartToastIn {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 .primary-button:disabled,
