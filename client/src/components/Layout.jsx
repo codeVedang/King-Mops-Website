@@ -1,5 +1,5 @@
 import { ArrowRight, LogOut, Menu, PackageSearch, ShoppingBag, User, X } from 'lucide-react';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Link, NavLink, Outlet, useNavigate } from 'react-router-dom';
 import { BrandLogo } from './BrandLogo.jsx';
 import { useAuth } from '../context/AuthContext.jsx';
@@ -17,9 +17,19 @@ const navItems = [
 
 export const Layout = () => {
   const [open, setOpen] = useState(false);
+  const [showLoader, setShowLoader] = useState(() => !sessionStorage.getItem('kingmops:introSeen'));
   const { user, profile, logout, isAdmin } = useAuth();
   const { summary } = useCart();
   const navigate = useNavigate();
+
+  useEffect(() => {
+    if (!showLoader) return undefined;
+    const timer = window.setTimeout(() => {
+      sessionStorage.setItem('kingmops:introSeen', 'true');
+      setShowLoader(false);
+    }, 950);
+    return () => window.clearTimeout(timer);
+  }, [showLoader]);
 
   const handleLogout = async () => {
     await logout();
@@ -29,6 +39,11 @@ export const Layout = () => {
 
   return (
     <div className="app-shell">
+      {showLoader && (
+        <div className="site-loader" aria-label="Loading King Mops">
+          <BrandLogo light />
+        </div>
+      )}
       <header className="site-header">
         <Link className="brand-mark" to="/" onClick={() => setOpen(false)}>
           <BrandLogo />

@@ -1,4 +1,4 @@
-import { CheckCircle2, PackageCheck, ShieldCheck, ShoppingCart, Truck, Zap } from 'lucide-react';
+import { CheckCircle2, Minus, PackageCheck, Plus, ShieldCheck, ShoppingCart, Truck, Zap } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import { Link, useNavigate, useParams } from 'react-router-dom';
 import { ProductCard } from '../components/ProductCard.jsx';
@@ -9,10 +9,10 @@ import { formatINR } from '../lib/format.js';
 export const ProductDetail = () => {
   const { id } = useParams();
   const navigate = useNavigate();
-  const { addItem } = useCart();
+  const { items, addItem, setQuantity: setCartQuantity, removeItem } = useCart();
   const [product, setProduct] = useState(null);
   const [related, setRelated] = useState([]);
-  const [quantity, setQuantity] = useState(1);
+  const [quantity, setDesiredQuantity] = useState(1);
   const [activeImage, setActiveImage] = useState('');
 
   useEffect(() => {
@@ -25,9 +25,20 @@ export const ProductDetail = () => {
 
   if (!product) return <div className="page-loading">Loading product...</div>;
 
+  const cartItem = items.find((item) => item.id === product.id);
+
   const handleBuyNow = () => {
     addItem(product, quantity);
     navigate('/checkout');
+  };
+
+  const decreaseCartQuantity = () => {
+    if (!cartItem) return;
+    if (cartItem.quantity <= 1) {
+      removeItem(product.id);
+      return;
+    }
+    setCartQuantity(product.id, cartItem.quantity - 1);
   };
 
   return (
@@ -61,14 +72,26 @@ export const ProductDetail = () => {
               min="1"
               max={product.stock}
               value={quantity}
-              onChange={(event) => setQuantity(Math.max(1, Number(event.target.value)))}
+              onChange={(event) => setDesiredQuantity(Math.max(1, Number(event.target.value)))}
             />
           </label>
           <div className="button-row">
-            <button type="button" className="primary-button" onClick={() => addItem(product, quantity)}>
-              <ShoppingCart size={18} />
-              Add to Cart
-            </button>
+            {cartItem ? (
+              <div className="product-card-quantity detail-cart-quantity" aria-label={`${product.name} cart quantity`}>
+                <button type="button" onClick={decreaseCartQuantity} aria-label="Decrease quantity">
+                  <Minus size={16} />
+                </button>
+                <span>{cartItem.quantity}</span>
+                <button type="button" onClick={() => addItem(product)} aria-label="Increase quantity">
+                  <Plus size={16} />
+                </button>
+              </div>
+            ) : (
+              <button type="button" className="primary-button" onClick={() => addItem(product, quantity)}>
+                <ShoppingCart size={18} />
+                Add to Cart
+              </button>
+            )}
             <button type="button" className="secondary-button" onClick={handleBuyNow}>
               <Zap size={18} />
               Buy Now

@@ -40,9 +40,9 @@ export const App = () => (
             <Route path="about" element={<About />} />
             <Route path="contact" element={<Contact />} />
             <Route path="terms" element={<Terms />} />
+            <Route path="order-confirmation/:id" element={<OrderConfirmation />} />
 
             <Route element={<ProtectedRoute />}>
-              <Route path="order-confirmation/:id" element={<OrderConfirmation />} />
               <Route path="account" element={<Account />} />
               <Route path="account/orders/:id" element={<AccountOrderDetail />} />
             </Route>
