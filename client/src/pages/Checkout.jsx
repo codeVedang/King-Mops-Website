@@ -1,4 +1,4 @@
-import { CreditCard, Save, ShieldCheck, Smartphone } from 'lucide-react';
+import { CreditCard, Save } from 'lucide-react';
 import { useEffect, useMemo, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { OrderSummary } from '../components/OrderSummary.jsx';
@@ -21,21 +21,16 @@ const initialAddress = {
 
 export const Checkout = () => {
   const { items, clearCart, summary } = useCart();
-  const { profile, refreshProfile, sendPhoneOtp, verifyPhoneOtp, login, phoneVerification } = useAuth();
+  const { user, profile, refreshProfile, isAdmin } = useAuth();
   const navigate = useNavigate();
   const [address, setAddress] = useState({
     ...initialAddress,
-    fullName: profile?.name || '',
-    phone: profile?.phone || ''
+    fullName: !isAdmin ? profile?.name || '' : '',
+    phone: !isAdmin ? profile?.phone || '' : ''
   });
   const [saveAddress, setSaveAddress] = useState(true);
   const [coupon, setCoupon] = useState('');
   const [error, setError] = useState('');
-  const [message, setMessage] = useState('');
-  const [otp, setOtp] = useState('');
-  const [otpSending, setOtpSending] = useState(false);
-  const [otpChecking, setOtpChecking] = useState(false);
-  const [verifiedPhone, setVerifiedPhone] = useState('');
   const [paying, setPaying] = useState(false);
   const [serverSummary, setServerSummary] = useState(null);
 
@@ -47,12 +42,13 @@ export const Checkout = () => {
   const update = (event) => setAddress({ ...address, [event.target.name]: event.target.value });
 
   useEffect(() => {
-    if (verifiedPhone && verifiedPhone !== address.phone) {
-      setVerifiedPhone('');
-      setOtp('');
-      setMessage('');
-    }
-  }, [address.phone, verifiedPhone]);
+    if (isAdmin || !profile) return;
+    setAddress((current) => ({
+      ...current,
+      fullName: current.fullName || profile.name || '',
+      phone: current.phone || profile.phone || ''
+    }));
+  }, [isAdmin, profile]);
 
   useEffect(() => {
     setServerSummary(null);
@@ -63,49 +59,8 @@ export const Checkout = () => {
     if (items.length === 0) return 'Your cart is empty.';
     if (required.some((field) => !address[field]?.trim())) return 'Complete the delivery address.';
     if (!validatePhone(address.phone)) return 'Enter a valid 10-digit Indian mobile number.';
-    if (!verifiedPhone || verifiedPhone !== address.phone) {
-      return 'Verify your mobile number with OTP before payment.';
-    }
     if (!/^\d{6}$/.test(address.pinCode)) return 'Enter a valid 6-digit PIN code.';
     return '';
-  };
-
-  const sendCheckoutOtp = async () => {
-    setError('');
-    setMessage('');
-    if (!validatePhone(address.phone)) {
-      setError('Enter a valid 10-digit Indian mobile number.');
-      return;
-    }
-    setOtpSending(true);
-    try {
-      await sendPhoneOtp(address.phone);
-      setMessage('OTP sent. Enter it below before payment.');
-    } catch (err) {
-      setError(err.message);
-    } finally {
-      setOtpSending(false);
-    }
-  };
-
-  const verifyCheckoutOtp = async () => {
-    setError('');
-    setMessage('');
-    if (!address.fullName.trim()) {
-      setError('Enter your full name before OTP verification.');
-      return;
-    }
-    setOtpChecking(true);
-    try {
-      await verifyPhoneOtp(otp);
-      await login({ phone: address.phone, name: address.fullName });
-      setVerifiedPhone(address.phone);
-      setMessage('Mobile number verified for this order.');
-    } catch (err) {
-      setError(err.message);
-    } finally {
-      setOtpChecking(false);
-    }
   };
 
   const verifyAndCreateOrder = async (payment, orderId) => {
@@ -135,7 +90,9 @@ export const Checkout = () => {
       }))
     });
     clearCart();
-    await refreshProfile();
+    if (user && !isAdmin) {
+      await refreshProfile();
+    }
     navigate(`/order-confirmation/${data.order.id}`, { state: { order: data.order } });
   };
 
@@ -192,7 +149,7 @@ export const Checkout = () => {
           ondismiss: () => setError('Payment was cancelled. You can retry anytime.')
         },
         theme: {
-          color: '#f97316'
+          color: '#000000'
         }
       });
       checkout.open();
@@ -211,7 +168,6 @@ export const Checkout = () => {
           <h1>Delivery and payment</h1>
         </div>
         <form className="form-grid address-form">
-          <div id="phone-recaptcha-container" className="recaptcha-container" />
           <label>
             Full Name
             <input name="fullName" value={address.fullName} onChange={update} required />
@@ -220,29 +176,6 @@ export const Checkout = () => {
             Phone Number
             <input name="phone" value={address.phone} onChange={update} pattern="[6-9][0-9]{9}" required />
           </label>
-          <div className="otp-row checkout-otp-row full-span">
-            <button type="button" className="secondary-button" onClick={sendCheckoutOtp} disabled={otpSending}>
-              <Smartphone size={18} />
-              {otpSending ? 'Sending...' : 'Send OTP'}
-            </button>
-            <input
-              value={otp}
-              onChange={(event) => setOtp(event.target.value)}
-              placeholder="Enter OTP"
-              inputMode="numeric"
-              autoComplete="one-time-code"
-            />
-            <button type="button" className="secondary-button" onClick={verifyCheckoutOtp} disabled={otpChecking}>
-              <ShieldCheck size={18} />
-              {otpChecking ? 'Checking...' : 'Verify OTP'}
-            </button>
-          </div>
-          {verifiedPhone && verifiedPhone === address.phone && (
-            <p className="form-success full-span">Mobile number verified for payment.</p>
-          )}
-          {phoneVerification?.phone === address.phone && !phoneVerification.verified && (
-            <p className="form-success full-span">OTP sent to {address.phone}.</p>
-          )}
           <label>
             Flat / House No.
             <input name="flat" value={address.flat} onChange={update} required />
@@ -281,7 +214,6 @@ export const Checkout = () => {
           </label>
         </form>
         {error && <p className="form-error">{error}</p>}
-        {message && <p className="form-success">{message}</p>}
       </div>
       <OrderSummary
         summaryOverride={serverSummary}
@@ -296,10 +228,10 @@ export const Checkout = () => {
               type="button"
               className="primary-button full-width"
               onClick={pay}
-              disabled={paying || !verifiedPhone || verifiedPhone !== address.phone}
+              disabled={paying}
             >
               {paying ? <Save size={18} /> : <CreditCard size={18} />}
-              {paying ? 'Processing...' : verifiedPhone && verifiedPhone === address.phone ? 'Pay with Razorpay' : 'Verify Mobile First'}
+              {paying ? 'Processing...' : 'Pay with Razorpay'}
             </button>
           </>
         }

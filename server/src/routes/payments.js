@@ -10,12 +10,16 @@ import {
   verifyRazorpaySignature,
   verifyWebhookSignature
 } from '../lib/razorpay.js';
-import { requireAuth } from '../middleware/auth.js';
 import { env } from '../config/env.js';
 
 export const paymentsRouter = express.Router();
 
-paymentsRouter.post('/create-razorpay-order', requireAuth, async (req, res, next) => {
+const guestUserId = (phone = '') => {
+  const normalizedPhone = String(phone).replace(/\D/g, '').slice(-10);
+  return normalizedPhone ? `guest_${normalizedPhone}` : `guest_${Date.now()}`;
+};
+
+paymentsRouter.post('/create-razorpay-order', async (req, res, next) => {
   try {
     const summary = await calculateCart(req.body.items);
     const amountPaise = Math.round(Number(summary.totalPaise || 0));
@@ -37,7 +41,7 @@ paymentsRouter.post('/create-razorpay-order', requireAuth, async (req, res, next
   }
 });
 
-paymentsRouter.post('/verify', requireAuth, async (req, res, next) => {
+paymentsRouter.post('/verify', async (req, res, next) => {
   try {
     const {
       razorpayOrderId,
@@ -58,12 +62,16 @@ paymentsRouter.post('/verify', requireAuth, async (req, res, next) => {
       return res.status(400).json({ message: 'Payment signature verification failed.' });
     }
 
+    if (!address?.fullName || !address?.phone) {
+      return res.status(400).json({ message: 'Customer name and mobile number are required.' });
+    }
+
     const summary = await calculateCart(items);
     const paymentMethod = await fetchPaymentMethod(razorpayPaymentId);
     const order = await createOrder({
-      userId: req.user.uid,
+      userId: req.user?.uid || guestUserId(address.phone),
       customerName: address.fullName,
-      customerEmail: req.user.email || '',
+      customerEmail: req.user?.email || '',
       phone: address.phone,
       address,
       items: summary.items,
@@ -79,7 +87,7 @@ paymentsRouter.post('/verify', requireAuth, async (req, res, next) => {
       orderStatus: 'Pending'
     });
 
-    if (saveAddress) {
+    if (saveAddress && req.user?.uid) {
       await saveUserAddress(req.user.uid, address);
     }
 

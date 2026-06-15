@@ -1,7 +1,7 @@
 import {
   ArrowRight,
   Award,
-  CheckCircle2,
+  Building2,
   Clock3,
   Droplet,
   Layers3,
@@ -22,78 +22,93 @@ import { useCart } from '../context/CartContext.jsx';
 import { apiFetch } from '../lib/api.js';
 import { categories, formatINR } from '../lib/format.js';
 
-const categoryTone = {
-  Mops: 'home-category--mops',
-  Wipers: 'home-category--wipers',
-  'Cleaning Products': 'home-category--cleaning'
-};
-
-const surfaceItems = [
+const collections = [
   {
-    title: 'Floor care',
-    text: 'Spin mops, flat mops, and refills for daily home cleaning.',
+    title: 'Mops',
+    text: 'Daily floor-care essentials designed for homes, offices, and institutions.',
     to: '/shop?category=Mops',
+    image: 'https://images.unsplash.com/photo-1581578731548-c64695cc6952?auto=format&fit=crop&w=1200&q=82',
     icon: Droplet
   },
   {
-    title: 'Wet area control',
-    text: 'Wipers for bathrooms, balconies, glass, tiles, and shop floors.',
+    title: 'Wipers',
+    text: 'Clean finishes for bathrooms, balconies, glass, and wet surfaces.',
     to: '/shop?category=Wipers',
+    image: 'https://images.unsplash.com/photo-1603712725038-e9334ae8f39f?auto=format&fit=crop&w=1200&q=82',
     icon: Layers3
   },
   {
-    title: 'Routine finish',
-    text: 'Cleaning products that complete the final wipe and shine.',
-    to: '/shop?category=Cleaning%20Products',
+    title: 'Brushes',
+    text: 'Detail tools for corners, grout, fixtures, and tough everyday cleaning.',
+    to: '/shop?search=brush',
+    image: 'https://images.unsplash.com/photo-1563453392212-326f5e854473?auto=format&fit=crop&w=1200&q=82',
     icon: Store
-  }
-];
-
-const trustStats = [
-  { value: '3+', label: 'Core categories' },
-  { value: 'Live', label: 'GST-ready checkout' },
-  { value: '24/7', label: 'Online ordering' }
-];
-
-const whyItems = [
-  {
-    title: 'Selected for Indian homes',
-    text: 'Products are organized around real cleaning routines: floors, corners, wet areas, and counters.',
-    icon: CheckCircle2
   },
   {
-    title: 'Fast purchase flow',
-    text: 'Add to cart or Buy Now from product cards, then checkout through Razorpay securely.',
-    icon: Zap
-  },
-  {
-    title: 'Fresh catalog control',
-    text: 'Pricing, stock, product photos, and availability stay updated through the admin panel.',
+    title: 'Combo Packs',
+    text: 'Ready sets for complete cleaning coverage in one efficient purchase.',
+    to: '/shop?search=combo',
+    image: '/images/king-mops-home-hero.png',
     icon: PackageCheck
   }
 ];
 
-const assuranceItems = [
-  'Durable cleaning tools for repeat daily use',
-  'Clear pricing with MRP and selling price shown',
-  'Mobile-first checkout with saved delivery details',
-  'Support for home, shop, and bulk cleaning needs'
+const trustStats = [
+  { value: '10+', label: 'Years manufacturing experience' },
+  { value: '1000+', label: 'Happy customers' },
+  { value: '50000+', label: 'Products delivered' },
+  { value: '100+', label: 'Institutional clients' }
+];
+
+const whyItems = [
+  {
+    title: 'Factory Direct Pricing',
+    text: 'Premium daily-use products with practical pricing for regular buyers.',
+    icon: Store
+  },
+  {
+    title: 'Long Lasting Products',
+    text: 'Built for repeat cleaning rounds across homes, shops, and busy properties.',
+    icon: Clock3
+  },
+  {
+    title: 'Trusted By Institutions',
+    text: 'Designed for teams that need reliable cleaning stock without confusion.',
+    icon: Building2
+  },
+  {
+    title: 'Premium Quality Materials',
+    text: 'Strong fibers, reliable handles, and clean finishing across the catalog.',
+    icon: Award
+  },
+  {
+    title: 'Fast Delivery',
+    text: 'Razorpay checkout and admin order flow keep fulfillment clear and quick.',
+    icon: Truck
+  },
+  {
+    title: 'Bulk Supply Available',
+    text: 'Support for schools, offices, hotels, apartments, and recurring orders.',
+    icon: PackageCheck
+  }
 ];
 
 const testimonials = [
   {
-    name: 'Home buyer',
-    text: 'The product choices are simple, and checkout feels clean. I can quickly pick mops and wipers without confusion.'
+    name: 'Facility Manager',
+    text: 'King Mops makes repeat cleaning purchases feel simple, professional, and dependable.'
   },
   {
-    name: 'Apartment helper',
-    text: 'The store makes it easy to choose the right cleaning kit for daily floor and bathroom work.'
+    name: 'Apartment Buyer',
+    text: 'The products are easy to choose, the checkout is quick, and the brand feels trustworthy.'
   },
   {
-    name: 'Shop owner',
-    text: 'Good for regular-use cleaning products. The cart and order process are straightforward.'
+    name: 'Retail Customer',
+    text: 'Clear pricing, useful bundles, and fast ordering make this an easy cleaning store to return to.'
   }
 ];
+
+const institutions = ['Schools', 'Hospitals', 'Offices', 'Apartments', 'Hotels'];
 
 const faqs = [
   {
@@ -106,7 +121,7 @@ const faqs = [
   },
   {
     question: 'Can I contact for bulk or business requirements?',
-    answer: 'Yes. Use the contact form or call the support number shown on the website.'
+    answer: 'Yes. Use the contact page or call +91 99498 34578 for support and bulk enquiries.'
   }
 ];
 
@@ -147,33 +162,30 @@ export const Home = () => {
     <>
       <section className="home-hero premium-hero">
         <div className="home-hero-copy reveal-on-scroll">
-          <p className="eyebrow">Premium cleaning essentials</p>
-          <h1>King Brand Mops</h1>
-          <p>
-            Upgrade everyday cleaning with dependable mops, wipers, and home-care products designed
-            for Indian homes, shops, apartments, and busy spaces.
-          </p>
+          <p className="eyebrow">King Mops Premium</p>
+          <h1>CLEANING REDEFINED.</h1>
+          <p>Premium cleaning essentials crafted for homes, offices and institutions.</p>
           <div className="home-hero-actions">
-            <Link className="primary-button" to="/shop">
-              Shop Bestsellers
+            <Link className="primary-button magnetic-button" to="/shop">
+              Shop Collection
               <ArrowRight size={18} />
             </Link>
             <Link className="secondary-button glass-button" to="/contact">
-              Talk To Support
+              Bulk Orders
             </Link>
           </div>
           <div className="home-hero-meta">
             <span>
               <ShieldCheck size={16} />
-              Secure Razorpay checkout
+              Secure checkout
             </span>
             <span>
               <Truck size={16} />
-              Fast order processing
+              Fast processing
             </span>
             <span>
               <Award size={16} />
-              Quality-focused catalog
+              Premium quality
             </span>
           </div>
         </div>
@@ -185,7 +197,7 @@ export const Home = () => {
           <input
             value={search}
             onChange={(event) => setSearch(event.target.value)}
-            placeholder="Search mop, wiper, refill, cleaner..."
+            placeholder="Search mops, wipers, brushes, combo packs..."
           />
           <button type="submit">Search</button>
         </form>
@@ -198,69 +210,28 @@ export const Home = () => {
         </div>
       </section>
 
-      <section className="home-proof-strip premium-proof reveal-on-scroll">
-        <div>
-          <Truck size={22} />
-          <span>Fast online order processing</span>
-        </div>
-        <div>
-          <ShieldCheck size={22} />
-          <span>Secure checkout experience</span>
-        </div>
-        <div>
-          <Clock3 size={22} />
-          <span>Built for everyday cleaning rounds</span>
-        </div>
-      </section>
-
-      <section className="section-wrap home-spotlight-section reveal-on-scroll">
+      <section className="section-wrap home-collection-section reveal-on-scroll">
         <div className="section-heading">
           <div>
-            <p className="eyebrow">Featured Drop</p>
-            <h2>Popular products ready for quick checkout</h2>
+            <p className="eyebrow">Featured Collections</p>
+            <h2>Essential tools, presented like a premium home-care line.</h2>
           </div>
-          <Link to="/shop" className="inline-link">
-            Full catalog
-            <ArrowRight size={16} />
-          </Link>
         </div>
-
-        {spotlight ? (
-          <div className="home-product-spotlight premium-spotlight">
-            <Link className="home-product-image" to={`/products/${spotlight.id}`}>
-              <img src={spotlight.images?.[0]} alt={spotlight.name} />
-            </Link>
-            <div className="home-product-copy">
-              <span className="product-chip">{spotlight.category}</span>
-              <h3>{spotlight.name}</h3>
-              <p>{spotlight.description}</p>
-              <div className="price-row detail-price">
-                <strong>{formatINR(spotlight.pricePaise)}</strong>
-                {spotlight.mrpPaise > spotlight.pricePaise && <s>{formatINR(spotlight.mrpPaise)}</s>}
-              </div>
-              <div className="button-row">
-                <button type="button" className="primary-button" onClick={() => addItem(spotlight)}>
-                  <ShoppingCart size={18} />
-                  Add to Cart
-                </button>
-                <button type="button" className="secondary-button" onClick={() => buyNow(spotlight)}>
-                  <Zap size={18} />
-                  Buy Now
-                </button>
-              </div>
-              <div className="home-product-notes">
-                <span>Live stock status</span>
-                <span>Clear GST billing</span>
-                <span>Saved order records</span>
-              </div>
-            </div>
-          </div>
-        ) : (
-          <div className="home-empty-products">
-            <PackageCheck size={28} />
-            <span>Products added by admin will appear here automatically.</span>
-          </div>
-        )}
+        <div className="premium-collection-grid">
+          {collections.map((item) => {
+            const Icon = item.icon;
+            return (
+              <Link className="premium-collection-card" to={item.to} key={item.title}>
+                <img src={item.image} alt={item.title} loading="lazy" />
+                <span>
+                  <Icon size={18} />
+                  {item.title}
+                </span>
+                <p>{item.text}</p>
+              </Link>
+            );
+          })}
+        </div>
       </section>
 
       <section className="section-wrap reveal-on-scroll">
@@ -277,62 +248,11 @@ export const Home = () => {
       <section className="section-wrap reveal-on-scroll">
         <div className="section-heading">
           <div>
-            <p className="eyebrow">Shop By Cleaning Need</p>
-            <h2>Build a complete cleaning routine in one cart</h2>
+            <p className="eyebrow">Why King Mops</p>
+            <h2>Built for buyers who want quality without noise.</h2>
           </div>
         </div>
-        <div className="home-solution-grid">
-          {surfaceItems.map((item) => {
-            const Icon = item.icon;
-            return (
-              <Link className="home-solution-card premium-solution-card" to={item.to} key={item.title}>
-                <Icon size={24} />
-                <strong>{item.title}</strong>
-                <span>{item.text}</span>
-                <CheckCircle2 size={18} />
-              </Link>
-            );
-          })}
-        </div>
-      </section>
-
-      <section className="section-wrap home-category-section reveal-on-scroll">
-        <div className="section-heading">
-          <div>
-            <p className="eyebrow">Best Picks</p>
-            <h2>Premium essentials customers can buy fast</h2>
-          </div>
-        </div>
-        {gridProducts.length > 0 ? (
-          <div className="product-grid">
-            {gridProducts.map((product) => (
-              <ProductCard key={product.id} product={product} />
-            ))}
-          </div>
-        ) : (
-          <div className="category-grid">
-            {categories.map((category) => (
-              <Link
-                key={category}
-                to={`/shop?category=${encodeURIComponent(category)}`}
-                className={`category-tile ${categoryTone[category] || ''}`}
-              >
-                <span>{category}</span>
-                <ArrowRight size={18} />
-              </Link>
-            ))}
-          </div>
-        )}
-      </section>
-
-      <section className="section-wrap reveal-on-scroll">
-        <div className="section-heading">
-          <div>
-            <p className="eyebrow">Why Choose Us</p>
-            <h2>A cleaner buying experience for cleaning products</h2>
-          </div>
-        </div>
-        <div className="why-grid">
+        <div className="why-grid why-grid-six">
           {whyItems.map((item) => {
             const Icon = item.icon;
             return (
@@ -346,26 +266,91 @@ export const Home = () => {
         </div>
       </section>
 
-      <section className="quality-band reveal-on-scroll">
+      <section className="premium-video-section reveal-on-scroll">
+        <video
+          autoPlay
+          muted
+          loop
+          playsInline
+          preload="metadata"
+          poster="/images/king-mops-home-hero.png"
+        >
+          <source
+            src="https://videos.pexels.com/video-files/4109938/4109938-uhd_2560_1440_25fps.mp4"
+            type="video/mp4"
+          />
+        </video>
         <div>
-          <p className="eyebrow">Quality Assurance</p>
-          <h2>Designed for frequent cleaning, simple ordering, and confident purchase decisions.</h2>
-          <div className="quality-list">
-            {assuranceItems.map((item) => (
-              <span key={item}>
-                <CheckCircle2 size={18} />
-                {item}
-              </span>
-            ))}
-          </div>
+          <p className="eyebrow">Cinematic Care</p>
+          <h2>Built For Everyday Excellence.</h2>
         </div>
       </section>
+
+      <section className="section-wrap home-spotlight-section reveal-on-scroll">
+        <div className="section-heading">
+          <div>
+            <p className="eyebrow">Best Sellers</p>
+            <h2>High-confidence products for quick purchase.</h2>
+          </div>
+          <Link to="/shop" className="inline-link">
+            View all
+            <ArrowRight size={16} />
+          </Link>
+        </div>
+
+        {spotlight ? (
+          <div className="home-product-spotlight premium-spotlight">
+            <Link className="home-product-image" to={`/products/${spotlight.id}`}>
+              <img src={spotlight.images?.[0]} alt={spotlight.name} loading="lazy" />
+            </Link>
+            <div className="home-product-copy">
+              <span className="product-chip">{spotlight.category}</span>
+              <h3>{spotlight.name}</h3>
+              <p>{spotlight.description}</p>
+              <div className="price-row detail-price">
+                <strong>{formatINR(spotlight.pricePaise)}</strong>
+                {spotlight.mrpPaise > spotlight.pricePaise && <s>{formatINR(spotlight.mrpPaise)}</s>}
+              </div>
+              <div className="button-row">
+                <button type="button" className="primary-button" onClick={() => addItem(spotlight)}>
+                  <ShoppingCart size={18} />
+                  Quick Add
+                </button>
+                <button type="button" className="secondary-button" onClick={() => buyNow(spotlight)}>
+                  <Zap size={18} />
+                  Buy Now
+                </button>
+              </div>
+              <div className="home-product-notes">
+                <span>Live catalog</span>
+                <span>Secure payment</span>
+                <span>GST billing</span>
+              </div>
+            </div>
+          </div>
+        ) : (
+          <div className="home-empty-products">
+            <PackageCheck size={28} />
+            <span>Products added by admin will appear here automatically.</span>
+          </div>
+        )}
+      </section>
+
+      {gridProducts.length > 0 && (
+        <section className="section-wrap reveal-on-scroll">
+          <div className="product-grid">
+            {gridProducts.map((product) => (
+              <ProductCard key={product.id} product={product} />
+            ))}
+          </div>
+        </section>
+      )}
 
       <section className="section-wrap reveal-on-scroll">
         <div className="section-heading">
           <div>
-            <p className="eyebrow">Customer Confidence</p>
-            <h2>Trusted for simple, repeat cleaning purchases</h2>
+            <p className="eyebrow">Customer Testimonials</p>
+            <h2>Trusted by people who clean serious spaces.</h2>
           </div>
         </div>
         <div className="testimonial-grid">
@@ -379,6 +364,23 @@ export const Home = () => {
               <p>{item.text}</p>
               <strong>{item.name}</strong>
             </article>
+          ))}
+        </div>
+      </section>
+
+      <section className="section-wrap institutional-section reveal-on-scroll">
+        <div className="section-heading">
+          <div>
+            <p className="eyebrow">Institutional Buyers</p>
+            <h2>One catalog for every professional cleaning need.</h2>
+          </div>
+        </div>
+        <div className="institution-grid">
+          {institutions.map((item) => (
+            <div key={item}>
+              <Building2 size={22} />
+              <span>{item}</span>
+            </div>
           ))}
         </div>
       </section>
@@ -402,17 +404,18 @@ export const Home = () => {
 
       <section className="home-care-band premium-care-band reveal-on-scroll">
         <div>
-          <p className="eyebrow">Need help choosing?</p>
-          <h2>Tell us your space and cleaning need. We’ll help you pick the right kit.</h2>
-          <p>For product questions, order support, and bulk enquiries, reach the King Mops team directly.</p>
+          <p className="eyebrow">Premium CTA</p>
+          <h2>Experience Premium Cleaning Products.</h2>
+          <p>Shop refined cleaning essentials for homes, offices, and bulk requirements.</p>
         </div>
         <div className="care-band-actions">
-          <Link className="primary-button" to="/contact">
-            <PhoneCall size={18} />
-            Contact Support
-          </Link>
-          <Link className="secondary-button glass-button" to="/shop">
+          <Link className="primary-button" to="/shop">
             Shop Now
+            <ArrowRight size={18} />
+          </Link>
+          <Link className="secondary-button glass-button" to="/contact">
+            <PhoneCall size={18} />
+            Contact
           </Link>
         </div>
       </section>

@@ -94,8 +94,8 @@ export const OrderConfirmation = () => {
           Continue Shopping
           <ArrowRight size={18} />
         </Link>
-        <Link className="secondary-button" to="/account">
-          View My Orders
+        <Link className="secondary-button" to="/contact">
+          Contact Support
         </Link>
       </div>
     </section>
