@@ -60,7 +60,7 @@ export const OrderConfirmation = () => {
             <strong>{formatINR(order.subtotalPaise)}</strong>
           </div>
           <div className="mini-line">
-            <span>Taxes</span>
+            <span>Taxes and charges</span>
             <strong>{formatINR(order.gstPaise)}</strong>
           </div>
           <div className="mini-line">
