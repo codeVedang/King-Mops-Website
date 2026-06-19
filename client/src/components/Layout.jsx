@@ -1,4 +1,4 @@
-import { ArrowRight, LogOut, Menu, PackageSearch, ShoppingBag, User, X } from 'lucide-react';
+import { ArrowRight, LogOut, Menu, PackageSearch, PhoneCall, ShoppingBag, User, X } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import { Link, NavLink, Outlet, useNavigate } from 'react-router-dom';
 import { BrandLogo } from './BrandLogo.jsx';
@@ -65,6 +65,10 @@ export const Layout = () => {
             <ShoppingBag size={20} />
             {summary.count > 0 && <span>{summary.count}</span>}
           </Link>
+          <a className="bulk-call-button" href="tel:+919392478344" aria-label="Call for bulk orders">
+            <PhoneCall size={17} />
+            <span>Order Bulk</span>
+          </a>
           {user && !isAdmin ? (
             <div className="account-chip">
               <Link to="/account" aria-label="My account">
@@ -113,7 +117,7 @@ export const Layout = () => {
         <div className="footer-links">
           <strong>Contact</strong>
           <a href="mailto:crowdbuzz.company@gmail.com">crowdbuzz.company@gmail.com</a>
-          <a href="tel:+919949834578">+91 99498 34578</a>
+          <a href="tel:+919392478344">+91 93924 78344</a>
           <p>Sri Tirumala Products, Hyderabad, India.</p>
         </div>
         <div className="footer-links">
