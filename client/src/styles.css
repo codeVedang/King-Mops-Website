@@ -3869,3 +3869,333 @@ body {
     font-size: 52px;
   }
 }
+
+/* Mobile responsiveness hardening */
+html,
+body,
+#root {
+  width: 100%;
+  max-width: 100%;
+  overflow-x: hidden;
+}
+
+.app-shell main {
+  min-width: 0;
+}
+
+.bulk-call-button {
+  min-height: 44px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 0 16px;
+  border: 1px solid #000000;
+  border-radius: 999px;
+  background: #000000;
+  color: #ffffff;
+  font-weight: 900;
+  white-space: nowrap;
+  transition:
+    transform 180ms ease,
+    background-color 180ms ease,
+    border-color 180ms ease,
+    box-shadow 180ms ease;
+}
+
+.bulk-call-button:hover {
+  transform: translateY(-2px);
+  background: #1a1a1a;
+  border-color: #1a1a1a;
+  box-shadow: 0 16px 30px rgba(0, 0, 0, 0.16);
+}
+
+.app-shell .site-header,
+.app-shell .header-actions,
+.app-shell .primary-nav,
+.app-shell .product-card,
+.app-shell .summary-panel,
+.app-shell .contact-form,
+.app-shell .contact-info-panel,
+.app-shell .product-info-panel {
+  min-width: 0;
+}
+
+.app-shell .home-search-panel input,
+.app-shell .search-field input,
+.app-shell .form-grid input,
+.app-shell .form-grid textarea,
+.app-shell .contact-form input,
+.app-shell .contact-form textarea,
+.app-shell .shop-toolbar select {
+  min-width: 0;
+}
+
+@media (max-width: 1180px) {
+  .app-shell .site-header {
+    grid-template-columns: auto minmax(0, 1fr) auto;
+    gap: 12px;
+    padding-inline: 18px;
+  }
+
+  .app-shell .primary-nav {
+    justify-content: flex-end;
+  }
+
+  .app-shell .primary-nav a {
+    padding-inline: 9px;
+    font-size: 13px;
+  }
+
+  .bulk-call-button {
+    padding-inline: 12px;
+  }
+}
+
+@media (max-width: 900px) {
+  .app-shell .site-header {
+    grid-template-columns: minmax(108px, auto) minmax(0, 1fr);
+  }
+
+  .app-shell .primary-nav {
+    position: absolute;
+    left: 12px;
+    right: 12px;
+    top: calc(100% + 8px);
+    z-index: 70;
+    display: none;
+    flex-direction: column;
+    align-items: stretch;
+    max-height: calc(100dvh - 96px);
+    overflow: auto;
+    padding: 10px;
+    border: 1px solid #e6e6e6;
+    border-radius: 8px;
+    background: rgba(255, 255, 255, 0.98);
+    box-shadow: 0 24px 60px rgba(0, 0, 0, 0.14);
+  }
+
+  .app-shell .primary-nav.is-open {
+    display: flex;
+  }
+
+  .app-shell .primary-nav a {
+    min-height: 44px;
+    display: flex;
+    align-items: center;
+    padding-inline: 12px;
+    font-size: 15px;
+  }
+
+  .app-shell .header-actions {
+    justify-content: flex-end;
+  }
+
+  .app-shell .menu-toggle {
+    display: inline-flex;
+  }
+
+  .app-shell .two-column-page,
+  .app-shell .product-detail,
+  .app-shell .contact-grid,
+  .app-shell .about-story-grid,
+  .app-shell .shop-toolbar,
+  .app-shell .home-product-spotlight {
+    grid-template-columns: 1fr;
+  }
+
+  .app-shell .summary-panel,
+  .app-shell .product-info-panel {
+    position: static;
+  }
+}
+
+@media (max-width: 680px) {
+  .app-shell .site-header {
+    grid-template-columns: minmax(82px, auto) minmax(0, 1fr);
+    gap: 8px;
+    padding: 9px 10px;
+  }
+
+  .app-shell .brand-mark {
+    min-width: 0;
+  }
+
+  .app-shell .king-logo-copy strong {
+    font-size: clamp(22px, 7vw, 30px);
+  }
+
+  .app-shell .king-logo-copy small {
+    font-size: 9px;
+  }
+
+  .app-shell .header-actions {
+    gap: 5px;
+  }
+
+  .app-shell .header-actions .icon-button,
+  .app-shell .menu-toggle {
+    width: 38px;
+    min-width: 38px;
+    min-height: 38px;
+  }
+
+  .bulk-call-button {
+    min-height: 38px;
+    padding-inline: 10px;
+    font-size: 12px;
+  }
+
+  .bulk-call-button svg {
+    width: 15px;
+    height: 15px;
+  }
+
+  .app-shell .section-wrap,
+  .app-shell .page-wrap {
+    width: min(100% - 24px, 1200px);
+    padding: 38px 0;
+  }
+
+  .app-shell .home-hero.premium-hero {
+    min-height: 620px;
+    padding: 88px 16px 44px;
+    background-position: 58% center;
+  }
+
+  .app-shell .home-hero-copy h1,
+  .premium-video-section h2,
+  .app-shell .premium-care-band h2,
+  .app-shell .quality-band h2 {
+    font-size: clamp(40px, 13vw, 62px);
+    line-height: 0.98;
+  }
+
+  .app-shell .home-hero-copy p:not(.eyebrow),
+  .app-shell .about-hero p:not(.eyebrow),
+  .app-shell .contact-hero p:not(.eyebrow) {
+    font-size: 16px;
+    line-height: 1.55;
+  }
+
+  .app-shell .home-hero-actions,
+  .app-shell .button-row,
+  .app-shell .care-band-actions,
+  .app-shell .contact-action-band,
+  .app-shell .section-heading {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .app-shell .home-shop-console {
+    width: 100%;
+    padding: 12px;
+  }
+
+  .app-shell .home-search-panel {
+    grid-template-columns: auto minmax(0, 1fr);
+    min-height: auto;
+    padding: 12px;
+  }
+
+  .app-shell .home-search-panel button {
+    grid-column: 1 / -1;
+  }
+
+  .app-shell .home-category-pills {
+    display: grid;
+    grid-template-columns: 1fr;
+    width: 100%;
+  }
+
+  .app-shell .product-grid,
+  .app-shell .premium-collection-grid,
+  .app-shell .home-stats-grid,
+  .app-shell .why-grid,
+  .app-shell .why-grid-six,
+  .app-shell .testimonial-grid,
+  .app-shell .institution-grid,
+  .app-shell .contact-assurance,
+  .app-shell .order-detail-grid,
+  .app-shell .account-grid,
+  .app-shell .form-grid,
+  .app-shell .contact-form {
+    grid-template-columns: 1fr;
+  }
+
+  .app-shell .product-card-body {
+    min-height: auto;
+  }
+
+  .app-shell .product-card-actions {
+    grid-template-columns: 1fr;
+  }
+
+  .app-shell .main-product-frame {
+    min-height: auto;
+    padding: 10px;
+  }
+
+  .app-shell .main-product-frame .main-product-image {
+    height: min(78vw, 430px) !important;
+    padding: 6px;
+  }
+
+  .app-shell .product-info-panel {
+    padding: 18px;
+  }
+
+  .app-shell .product-info-panel h1,
+  .app-shell .page-title h1,
+  .app-shell .section-heading h2,
+  .app-shell .premium-page-title h1 {
+    font-size: clamp(30px, 10vw, 44px);
+    line-height: 1.02;
+    overflow-wrap: anywhere;
+  }
+
+  .app-shell .thumb-row {
+    overflow-x: auto;
+    padding-bottom: 4px;
+  }
+
+  .app-shell .cart-item {
+    grid-template-columns: 78px minmax(0, 1fr);
+    gap: 12px;
+  }
+
+  .app-shell .site-footer {
+    grid-template-columns: 1fr;
+    padding: 34px 16px;
+  }
+}
+
+@media (max-width: 430px) {
+  .app-shell .header-actions > .icon-button:first-child {
+    display: none;
+  }
+
+  .bulk-call-button {
+    padding-inline: 8px;
+  }
+
+  .bulk-call-button span {
+    max-width: 62px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .app-shell .header-actions .icon-button,
+  .app-shell .menu-toggle {
+    width: 36px;
+    min-width: 36px;
+    min-height: 36px;
+  }
+
+  .app-shell .premium-collection-card,
+  .premium-video-section,
+  .app-shell .quality-band,
+  .app-shell .premium-care-band {
+    min-height: 430px;
+  }
+}

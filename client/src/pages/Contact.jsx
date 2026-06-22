@@ -9,7 +9,7 @@ const contactItems = [
   },
   {
     label: 'Phone',
-    value: '+91 99498 34578',
+    value: '+91 93924 78344',
     icon: Phone
   },
   {

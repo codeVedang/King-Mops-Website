@@ -121,7 +121,7 @@ const faqs = [
   },
   {
     question: 'Can I contact for bulk or business requirements?',
-    answer: 'Yes. Use the contact page or call +91 99498 34578 for support and bulk enquiries.'
+    answer: 'Yes. Use the contact page or call +91 93924 78344 for support and bulk enquiries.'
   }
 ];
 
