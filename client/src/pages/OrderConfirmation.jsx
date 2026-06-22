@@ -45,7 +45,7 @@ export const OrderConfirmation = () => {
         <div className="confirmation-card">
           <h2>
             <ShoppingBag size={22} />
-            Items Ordered
+            Items Ordered.
           </h2>
           {order.items.map((item) => (
             <div className="mini-line" key={item.productId}>
