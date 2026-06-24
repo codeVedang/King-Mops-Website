@@ -4199,3 +4199,270 @@ body,
     min-height: 430px;
   }
 }
+
+/* Reference-inspired shop presence */
+.app-shell .shop-reference-layout {
+  width: min(1320px, calc(100% - 40px));
+}
+
+.app-shell .shop-hero-title {
+  min-height: 260px;
+  align-items: end;
+  padding: clamp(28px, 5vw, 56px);
+  border: 1px solid #e8e8e8;
+  border-radius: 8px;
+  background:
+    linear-gradient(90deg, rgba(0, 0, 0, 0.86), rgba(0, 0, 0, 0.42)),
+    url("/images/king-mops-home-hero.png");
+  background-size: cover;
+  background-position: center;
+  color: #ffffff;
+}
+
+.app-shell .shop-hero-title .eyebrow,
+.app-shell .shop-hero-title p:not(.eyebrow) {
+  color: rgba(255, 255, 255, 0.76);
+}
+
+.app-shell .shop-market-layout {
+  display: grid;
+  grid-template-columns: 280px minmax(0, 1fr);
+  gap: 24px;
+  align-items: start;
+}
+
+.app-shell .shop-sidebar {
+  position: sticky;
+  top: 96px;
+  display: grid;
+  gap: 14px;
+  min-width: 0;
+}
+
+.app-shell .shop-sidebar-card,
+.app-shell .shop-bulk-panel,
+.app-shell .shop-topbar,
+.app-shell .shop-service-strip {
+  border: 1px solid #e6e6e6;
+  border-radius: 8px;
+  background: #ffffff;
+  box-shadow: 0 16px 42px rgba(0, 0, 0, 0.05);
+}
+
+.app-shell .shop-sidebar-card {
+  display: grid;
+  gap: 12px;
+  padding: 16px;
+}
+
+.app-shell .shop-sidebar-card > strong {
+  font-size: 18px;
+}
+
+.app-shell .shop-category-list {
+  display: grid;
+  gap: 8px;
+}
+
+.app-shell .shop-category-list button {
+  min-height: 42px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border: 1px solid #e9e9e9;
+  border-radius: 8px;
+  background: #f8f8f8;
+  color: #111111;
+  padding: 0 12px;
+  font-weight: 900;
+  text-align: left;
+}
+
+.app-shell .shop-category-list button:hover,
+.app-shell .shop-category-list button.is-active {
+  border-color: #000000;
+  background: #000000;
+  color: #ffffff;
+}
+
+.app-shell .shop-bulk-panel {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 16px;
+  background: #000000;
+  color: #ffffff;
+}
+
+.app-shell .shop-bulk-panel span {
+  display: grid;
+  gap: 3px;
+}
+
+.app-shell .shop-bulk-panel small {
+  color: rgba(255, 255, 255, 0.68);
+  font-weight: 800;
+}
+
+.app-shell .shop-results-panel {
+  min-width: 0;
+}
+
+.app-shell .shop-topbar {
+  min-height: 62px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 14px;
+  margin-bottom: 18px;
+  padding: 12px 16px;
+}
+
+.app-shell .shop-topbar p {
+  margin: 0;
+}
+
+.app-shell .shop-topbar > div {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  color: #5f5f5f;
+  font-weight: 900;
+}
+
+.app-shell .shop-product-grid {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 20px;
+}
+
+.app-shell .shop-loading {
+  border: 1px solid #e6e6e6;
+  border-radius: 8px;
+  background: #ffffff;
+}
+
+.app-shell .shop-pagination {
+  justify-content: space-between;
+  padding: 14px;
+  border: 1px solid #e6e6e6;
+  border-radius: 8px;
+  background: #ffffff;
+}
+
+.app-shell .shop-service-strip {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 1px;
+  overflow: hidden;
+  margin-top: 24px;
+  background: #e6e6e6;
+}
+
+.app-shell .shop-service-strip a {
+  min-height: 58px;
+  display: grid;
+  place-items: center;
+  background: #ffffff;
+  font-weight: 900;
+}
+
+.app-shell .shop-service-strip a:hover {
+  background: #000000;
+  color: #ffffff;
+}
+
+.app-shell .product-quick-actions {
+  position: absolute;
+  left: 12px;
+  right: 12px;
+  bottom: 12px;
+  z-index: 3;
+  display: flex;
+  justify-content: space-between;
+  gap: 8px;
+  opacity: 0;
+  transform: translateY(10px);
+  transition:
+    opacity 180ms ease,
+    transform 180ms ease;
+}
+
+.app-shell .product-quick-actions span {
+  min-height: 36px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding: 0 12px;
+  border-radius: 999px;
+  background: rgba(0, 0, 0, 0.88);
+  color: #ffffff;
+  font-size: 12px;
+  font-weight: 900;
+  backdrop-filter: blur(12px);
+}
+
+.app-shell .product-card:hover .product-quick-actions {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+@media (max-width: 1080px) {
+  .app-shell .shop-market-layout {
+    grid-template-columns: 230px minmax(0, 1fr);
+    gap: 16px;
+  }
+
+  .app-shell .shop-product-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 820px) {
+  .app-shell .shop-reference-layout {
+    width: min(100% - 24px, 1320px);
+  }
+
+  .app-shell .shop-market-layout {
+    grid-template-columns: 1fr;
+  }
+
+  .app-shell .shop-sidebar {
+    position: static;
+  }
+
+  .app-shell .shop-sidebar-card {
+    padding: 14px;
+  }
+
+  .app-shell .shop-category-list {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 560px) {
+  .app-shell .shop-hero-title {
+    min-height: 320px;
+    padding: 22px;
+  }
+
+  .app-shell .shop-category-list,
+  .app-shell .shop-product-grid,
+  .app-shell .shop-service-strip {
+    grid-template-columns: 1fr;
+  }
+
+  .app-shell .shop-topbar {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .app-shell .product-quick-actions {
+    opacity: 1;
+    transform: none;
+  }
+
+  .app-shell .product-quick-actions span:first-child {
+    flex: 1;
+  }
+}

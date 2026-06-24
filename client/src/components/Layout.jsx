@@ -1,5 +1,5 @@
 import { ArrowRight, LogOut, Menu, PackageSearch, PhoneCall, ShoppingBag, User, X } from 'lucide-react';
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { Link, NavLink, Outlet, useNavigate } from 'react-router-dom';
 import { BrandLogo } from './BrandLogo.jsx';
 import { useAuth } from '../context/AuthContext.jsx';
@@ -17,19 +17,9 @@ const navItems = [
 
 export const Layout = () => {
   const [open, setOpen] = useState(false);
-  const [showLoader, setShowLoader] = useState(() => !sessionStorage.getItem('kingmops:introSeen'));
   const { user, profile, logout, isAdmin } = useAuth();
   const { summary } = useCart();
   const navigate = useNavigate();
-
-  useEffect(() => {
-    if (!showLoader) return undefined;
-    const timer = window.setTimeout(() => {
-      sessionStorage.setItem('kingmops:introSeen', 'true');
-      setShowLoader(false);
-    }, 950);
-    return () => window.clearTimeout(timer);
-  }, [showLoader]);
 
   const handleLogout = async () => {
     await logout();
@@ -39,11 +29,6 @@ export const Layout = () => {
 
   return (
     <div className="app-shell">
-      {showLoader && (
-        <div className="site-loader" aria-label="Loading King Mops">
-          <BrandLogo light />
-        </div>
-      )}
       <header className="site-header">
         <Link className="brand-mark" to="/" onClick={() => setOpen(false)}>
           <BrandLogo />
@@ -65,7 +50,7 @@ export const Layout = () => {
             <ShoppingBag size={20} />
             {summary.count > 0 && <span>{summary.count}</span>}
           </Link>
-          <a className="bulk-call-button" href="tel:+919392478344" aria-label="Call for bulk orders">
+          <a className="bulk-call-button" href="tel:+919949834578" aria-label="Call for bulk orders">
             <PhoneCall size={17} />
             <span>Order Bulk</span>
           </a>
@@ -117,7 +102,7 @@ export const Layout = () => {
         <div className="footer-links">
           <strong>Contact</strong>
           <a href="mailto:crowdbuzz.company@gmail.com">crowdbuzz.company@gmail.com</a>
-          <a href="tel:+919392478344">+91 93924 78344</a>
+          <a href="tel:+919949834578">+91 99498 34578</a>
           <p>Sri Tirumala Products, Hyderabad, India.</p>
         </div>
         <div className="footer-links">

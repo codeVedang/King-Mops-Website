@@ -47,7 +47,7 @@ export const downloadInvoicePdf = async (order) => {
   doc.setFontSize(11);
   doc.setFont('helvetica', 'normal');
   addText('Sri Tirumala Products, Hyderabad, India', margin, y + 20);
-  addText('crowdbuzz.company@gmail.com | +91 93924 78344', margin, y + 36);
+  addText('crowdbuzz.company@gmail.com | +91 99498 34578', margin, y + 36);
   doc.setFont('helvetica', 'bold');
   doc.setFontSize(18);
   addText('INVOICE', pageWidth - margin, y + 12, { align: 'right' });

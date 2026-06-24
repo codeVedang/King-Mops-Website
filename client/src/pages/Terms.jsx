@@ -122,7 +122,7 @@ export const Terms = () => (
         <br />
         Email: <a href="mailto:crowdbuzz.company@gmail.com">crowdbuzz.company@gmail.com</a>
         <br />
-        Phone: <a href="tel:+919392478344">+91 93924 78344</a>
+        Phone: <a href="tel:+919949834578">+91 99498 34578</a>
       </p>
     </div>
 

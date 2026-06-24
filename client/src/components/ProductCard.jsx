@@ -1,4 +1,4 @@
-import { Minus, Plus, ShoppingCart, Zap } from 'lucide-react';
+import { Eye, Heart, Minus, Plus, ShoppingCart, Zap } from 'lucide-react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useCart } from '../context/CartContext.jsx';
 import { formatINR } from '../lib/format.js';
@@ -33,6 +33,15 @@ export const ProductCard = ({ product }) => {
         <div className="product-card-badges">
           {product.isFeatured && <span className="badge">Best seller</span>}
           {discount > 0 && <span className="badge discount-badge">{discount}% off</span>}
+        </div>
+        <div className="product-quick-actions" aria-hidden="true">
+          <span>
+            <Eye size={15} />
+            Quick view
+          </span>
+          <span>
+            <Heart size={15} />
+          </span>
         </div>
       </Link>
       <div className="product-card-body">
